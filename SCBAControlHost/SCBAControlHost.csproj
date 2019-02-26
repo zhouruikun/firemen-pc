@@ -1,0 +1,279 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EE303DF6-E2EE-4787-BA72-75FABE17CC69}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SCBAControlHost</RootNamespace>
+    <AssemblyName>SCBAControlHost</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Aspose.Words">
+      <HintPath>ExternLib\Aspose\Aspose.Words.dll</HintPath>
+    </Reference>
+    <Reference Include="CoreAudioApi">
+      <HintPath>ExternLib\CoreAudioApi\CoreAudioApi.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExternLib\NPOI\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>ExternLib\Log4Net\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExternLib\NPOI\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExternLib\NPOI\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExternLib\NPOI\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExternLib\NPOI\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppFuction\LogMaintain.cs" />
+    <Compile Include="Form\CheckUserPanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\DetailsForm\DetailsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\DetailsForm\DetailsForm.Designer.cs">
+      <DependentUpon>DetailsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\EnterPwdForm\EnterPwdForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\EnterPwdForm\EnterPwdForm.Designer.cs">
+      <DependentUpon>EnterPwdForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\FormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\FormMainCall.cs" />
+    <Compile Include="Form\FormMainThread.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\InfoSyncPanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\MessageBoxEX.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\MessageBoxEX.Designer.cs">
+      <DependentUpon>MessageBoxEX.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\PanelWithoutAutoScroll.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Form\SerialComDebug\SerialComDebug.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\SerialComDebug\SerialComDebug.Designer.cs">
+      <DependentUpon>SerialComDebug.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\SysSettingPanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\TempGroupPanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\UserChangeNOPanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\KnowledgeBasePanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\DeviceBasePanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MyUtils\AppUtil.cs" />
+    <Compile Include="MyUtils\CSVHelper.cs" />
+    <Compile Include="MyUtils\CtrlAutoSize.cs" />
+    <Compile Include="MyUtils\FolderHelper.cs" />
+    <Compile Include="MyUtils\HttpHelper.cs" />
+    <Compile Include="MyUtils\RegexUtil.cs" />
+    <Compile Include="MyUtils\SerialEnumPort.cs" />
+    <Compile Include="MyUtils\ZipHelper.cs" />
+    <Compile Include="NetCommunication\NetCommand.cs" />
+    <Compile Include="NetCommunication\NetCommunicate.cs" />
+    <Compile Include="NetCommunication\NetDelegate.cs" />
+    <Compile Include="NetCommunication\TcpClientWithTimeout.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerialCommunication\ProtocolCommand.cs" />
+    <Compile Include="SerialCommunication\SerialCommunicate.cs" />
+    <Compile Include="SerialCommunication\SerialDataPacket.cs" />
+    <Compile Include="SerialCommunication\SerialOpMsg.cs" />
+    <Compile Include="SerialCommunication\SerialMsg.cs" />
+    <Compile Include="SysConfig\SystemSetting.cs" />
+    <Compile Include="User\User.cs" />
+    <Compile Include="User\UserRW.cs" />
+    <Compile Include="User\UserView.cs" />
+    <Compile Include="Win32APICall.cs" />
+    <Compile Include="WorkLog\LogCommand.cs" />
+    <Compile Include="WorkLog\PlayBackLog.cs" />
+    <Compile Include="WorkLog\WorkLog.cs" />
+    <Compile Include="WorkLog\WorkLogPlay.cs" />
+    <Compile Include="WorkLog\LogPlayCommand.cs" />
+    <EmbeddedResource Include="Form\DetailsForm\DetailsForm.resx">
+      <DependentUpon>DetailsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\EnterPwdForm\EnterPwdForm.resx">
+      <DependentUpon>EnterPwdForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\MessageBoxEX.resx">
+      <DependentUpon>MessageBoxEX.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\SerialComDebug\SerialComDebug.resx">
+      <DependentUpon>SerialComDebug.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\settingImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\uploadImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Shutdown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\loseContact.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\retreatFail.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\retreating.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ExternLib\Log4Net\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ExternLib\NPOI\ICSharpCode.SharpZipLib.dll" />
+    <Content Include="ExternLib\NPOI\NPOI.dll" />
+    <Content Include="ExternLib\NPOI\NPOI.OOXML.dll" />
+    <Content Include="ExternLib\NPOI\NPOI.OpenXml4Net.dll" />
+    <Content Include="ExternLib\NPOI\NPOI.OpenXmlFormats.dll" />
+    <Content Include="ExternLib\NPOI\NPOI.XML" />
+    <None Include="res\retreating1.png" />
+    <None Include="res\Alarm.wav" />
+    <None Include="res\Mouse_48x48.png" />
+    <None Include="res\Open_32x32_up.png" />
+    <None Include="res\Open_32x32_down.png" />
+    <None Include="res\Stop_32x32_up.png" />
+    <None Include="res\Stop_32x32_down.png" />
+    <None Include="res\Play_32x32_up.png" />
+    <None Include="res\Play_32x32_down.png" />
+    <None Include="res\Pause_32x32_up.png" />
+    <None Include="res\Pause_32x32_down.png" />
+    <None Include="res\UploadingImage.gif" />
+    <None Include="res\Waiting.gif" />
+    <None Include="res\wifi_disconnected_24px.png" />
+    <None Include="res\wifi_connected_24px.png" />
+    <None Include="res\settings.png" />
+    <None Include="res\btnCloseWhiteBack.png" />
+    <None Include="res\UploadImage1.gif" />
+    <None Include="res\buttons\DropDownBtn_press.png" />
+    <None Include="res\buttons\DropDownBtn_pop.png" />
+    <None Include="res\CircularLevel.png" />
+    <None Include="res\btnClose.png" />
+    <None Include="res\UserImageNew.png" />
+    <None Include="res\DetailsImageNew.png" />
+    <None Include="res\buttons\rec_btn_press.png" />
+    <None Include="res\buttons\rec_btn_pop.png" />
+    <None Include="res\buttons\circular_border_btn_press_y.png" />
+    <None Include="res\buttons\circular_border_btn_press_g.png" />
+    <None Include="res\buttons\circular_border_btn_pop_y.png" />
+    <None Include="res\buttons\circular_border_btn_pop_g.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
