@@ -7,6 +7,80 @@
 
 
 [Header]
+ 2019-02-26 10:33:31,685 [实时上传线程] ERROR - 出现未处理的异常：
+异常类型:System.InvalidOperationException
+异常信息:Cross-thread operation not valid: Control 'richTextBoxTask' accessed from a thread other than the thread it was created on.
+堆栈信息:   at System.Windows.Forms.Control.get_Handle()
+   at System.Windows.Forms.RichTextBox.StreamOut(Stream data, Int32 flags, Boolean includeCrLfs)
+   at System.Windows.Forms.RichTextBox.StreamOut(Int32 flags)
+   at System.Windows.Forms.RichTextBox.get_Text()
+   at SCBAControlHost.FormMain.StartRealUpload() in F:\VS2010\projects\CSharp_PRO\SCBAControlHost_new\SCBAControlHost\Form\FormMainThread.cs:line 880
+   at System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean ignoreSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.ThreadHelper.ThreadStart()
+
+
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ 2019-02-26 10:34:53,121 [实时上传线程] ERROR - 出现未处理的异常：
+异常类型:System.InvalidOperationException
+异常信息:Cross-thread operation not valid: Control 'richTextBoxTask' accessed from a thread other than the thread it was created on.
+堆栈信息:   at System.Windows.Forms.Control.get_Handle()
+   at System.Windows.Forms.RichTextBox.StreamOut(Stream data, Int32 flags, Boolean includeCrLfs)
+   at System.Windows.Forms.RichTextBox.StreamOut(Int32 flags)
+   at System.Windows.Forms.RichTextBox.get_Text()
+   at SCBAControlHost.FormMain.StartRealUpload() in F:\VS2010\projects\CSharp_PRO\SCBAControlHost_new\SCBAControlHost\Form\FormMainThread.cs:line 880
+   at System.Threading.ThreadHelper.ThreadStart_Context(Object state)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state, Boolean ignoreSyncCtx)
+   at System.Threading.ExecutionContext.Run(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.ThreadHelper.ThreadStart()
+
+
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
  [Footer]
  
 

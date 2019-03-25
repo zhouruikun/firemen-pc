@@ -1,0 +1,27 @@
+
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ 2019-02-27 10:06:33,715 [1] INFO  - 出现已捕获的异常：
+异常类型:System.FormatException
+异常信息:该字符串未被识别为有效的 DateTime。
+堆栈信息:   在 System.DateTimeParse.ParseExact(String s, String format, DateTimeFormatInfo dtfi, DateTimeStyles style)
+   在 SCBAControlHost.UserRW.ReadDefaultUserFile() 位置 D:\Projects\nbbzyj_fire\FireFightingSystem-pc\SCBAControlHost_new\SCBAControlHost\User\UserRW.cs:行号 134
+
+[Footer]
+ 

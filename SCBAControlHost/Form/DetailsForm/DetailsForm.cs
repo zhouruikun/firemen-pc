@@ -39,8 +39,8 @@ namespace SCBAControlHost
 		{
 			InitializeComponent();
 
-			this.pictureBoxDetailsFormUserPhoto.Parent = this.pictureBoxDetailsFormUserBottom;
-			pictureBoxDetailsFormUserPhoto.Location = new Point(30, 20);
+			//this.pictureBoxDetailsFormUserPhoto.Parent = this.pictureBoxDetailsFormUserBottom;		// 修改后注释掉的(2019-2-26)
+			//pictureBoxDetailsFormUserPhoto.Location = new Point(30, 20);
 
 			this.TransparencyKey = Color.Silver;	//此窗口设置为透明
 			this.FormClosing += new FormClosingEventHandler(DetailsForm_FormClosing);	//窗口关闭事件
@@ -183,11 +183,6 @@ namespace SCBAControlHost
 			fBack.Location = this.Location;
 		}
 
-        #endregion
-
-        private void pictureBoxDetailsFormUserPhoto_Click(object sender, EventArgs e)
-        {
-
-        }
-    }
+		#endregion
+	}
 }

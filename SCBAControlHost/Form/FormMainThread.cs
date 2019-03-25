@@ -324,15 +324,15 @@ namespace SCBAControlHost
 													serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
 												}
 											}
-											else		//组号已存在信道列表中
+											else		// 组号已存在信道列表中
 											{
 												byte[] tarGrpNo = new byte[4];
 												Array.Copy(recvMsg.PacketData.DataFiled, 1, tarGrpNo, 0, 4);	//复制目标主机序列号
 												SerialSendMsg sendMsg = ProtocolCommand.ServerQueryAckMsg(tarGrpNo, SysConfig.getSerialNOBytes(), tmpKey);	//返回响应
-												serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
+												serialCom.SendQueue_Enqueue(sendMsg);	// 发送出去
 											}
 
-											//写入串口接收记录到日志文件中
+											// 写入串口接收记录到日志文件中
 											worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialRecv, recvMsg));
 										}
 										break;
@@ -433,7 +433,7 @@ namespace SCBAControlHost
 			}
 		}
 
-		//周期记录线程
+		// 周期记录线程
 		void PeriodRecordThread()
 		{
 			int wrklogCnt = 0;
@@ -441,7 +441,7 @@ namespace SCBAControlHost
 
 			while (true)
 			{
-				//周期30s写入worklog
+				// 周期30s写入worklog
 				if (wrklogCnt < 30)
 				{
 					wrklogCnt++;
@@ -452,7 +452,7 @@ namespace SCBAControlHost
 					worklog.LogQueue_Enqueue(LogCommand.getAllUserStatusRecord(users));
 				}
 
-				//周期25s检测终端掉线
+				// 周期25s检测终端掉线
 				if (LostConnectCnt < 25)
 				{
 					LostConnectCnt++;
@@ -462,19 +462,19 @@ namespace SCBAControlHost
 					LostConnectCnt = 0;
 					for (int i = 0; i < users.Count; i++)
 					{
-						if (users[i].isRecvPack)		//若收到数据包
+						if (users[i].isRecvPack)		// 若收到数据包
 						{
 							users[i].isRecvPack = false;
 						}
 						else
 						{
-							//若用户状态不是 不存在 关机 失去联系
+							// 若用户状态不是 不存在 关机 失去联系
 							if (users[i].UStatus != USERSTATUS.NoExistStatus && users[i].UStatus != USERSTATUS.PowerOffStatus && users[i].UStatus != USERSTATUS.LoseContactStatus)
 							{
 								UserStatusPara st = new UserStatusPara();
 								st.teriminalNO = (byte)users[i].BasicInfo.terminalNO;
 								st.status = USERSTATUS.LoseContactStatus;
-								lock (m_SyncContext) { m_SyncContext.Send(ChangeUserState, st); }			//改变用户状态为失去联系
+								lock (m_SyncContext) { m_SyncContext.Send(ChangeUserState, st); }			// 改变用户状态为失去联系
 							}
 						}
 					}
@@ -490,17 +490,17 @@ namespace SCBAControlHost
 		//报警播放线程
 		public void AlarmPlaySound()
 		{
-			bool isShouldPlaySound = false;		//是否应该播放声音
-			//SoundPlayer AlarmSound = new SoundPlayer(Properties.Resources.Alarm);	//报警音频
-			SoundPlayer AlarmSound = new SoundPlayer(@"./res/Sound/Alarm.wav");	//报警音频
-			bool isPlayingAlarmSound = false;										//是否正在播放声音
+			bool isShouldPlaySound = false;		// 是否应该播放声音
+			//SoundPlayer AlarmSound = new SoundPlayer(Properties.Resources.Alarm);	// 报警音频
+			SoundPlayer AlarmSound = new SoundPlayer(@"./res/Sound/Alarm.wav");		// 报警音频
+			bool isPlayingAlarmSound = false;										// 是否正在播放声音
 			while (true)
 			{
 				Thread.Sleep(100);
 				isShouldPlaySound = false;
 				if (users != null)
 				{
-					//只要有一个用户处于正在播放状态, 则就应该播放报警声音
+					// 只要有一个用户处于正在播放状态, 则就应该播放报警声音
 					foreach (User user in users)
 					{
 						if (user.IsPlayingAlarm)
@@ -511,7 +511,7 @@ namespace SCBAControlHost
 					}
 				}
 
-				if (isShouldPlaySound)		//若应该播放声音
+				if (isShouldPlaySound)		// 若应该播放声音
 				{
 					if (isPlayingAlarmSound == false)	// 若当前没有在播放, 则播放
 					{
@@ -519,7 +519,7 @@ namespace SCBAControlHost
 						isPlayingAlarmSound = true;
 					}
 				}
-				else						//若不应该播放声音
+				else						// 若不应该播放声音
 				{
 					if (isPlayingAlarmSound == true)	// 若当前正在播放, 则停止播放
 					{
@@ -531,14 +531,14 @@ namespace SCBAControlHost
 			}
 		}
 
-		//全部刷新线程
+		// 全部刷新线程
 		public void AllUserUpdate_Thread()
 		{
-			Dictionary<byte[], bool> SerialNoDic = new Dictionary<byte[], bool>();		//终端序列号字典, key存储终端序列号, value代表是否已收到终端的响应
-			List<byte[]> SerialNoKey = new List<byte[]>();								//终端序列号列表
-			Dictionary<byte[], SerialRecvMsg> TerminalMsg = new Dictionary<byte[], SerialRecvMsg>();//终端消息字典, key存储终端序列号, value存储终端返回的消息
+			Dictionary<byte[], bool> SerialNoDic = new Dictionary<byte[], bool>();		// 终端序列号字典, key存储终端序列号, value代表是否已收到终端的响应
+			List<byte[]> SerialNoKey = new List<byte[]>();								// 终端序列号列表
+			Dictionary<byte[], SerialRecvMsg> TerminalMsg = new Dictionary<byte[], SerialRecvMsg>();// 终端消息字典, key存储终端序列号, value存储终端返回的消息
 
-			//1. 首先找到当前不处于"关机"或"撤出中"状态的终端, 并将它们存放到列表中
+			// 1. 首先找到当前不处于"关机"或"撤出中"状态的终端, 并将它们存放到列表中
 			foreach (User user in users)
 			{
 				if ((user.UStatus != USERSTATUS.PowerOffStatus) && (user.UStatus != USERSTATUS.RetreatingStatus))	//若用户状态不为"关机"和"撤出中"状态
@@ -548,39 +548,39 @@ namespace SCBAControlHost
 			}
 			SerialNoKey.AddRange(SerialNoDic.Keys);
 
-			//2. 开始一次对它们发送查询命令
-			//重发两次
+			// 2. 开始一次对它们发送查询命令
+			// 重发两次
 			for (int i = 0; i < 2; i++)
 			{
 				foreach (byte[] serialNO in SerialNoKey)
 				{
-					if (SerialNoDic[serialNO] == false)	//若终端还没有接到响应
+					if (SerialNoDic[serialNO] == false)	// 若终端还没有接到响应
 					{
-						SerialSendMsg sendMsg = ProtocolCommand.ServerQueryTerminalCmdMsg(serialNO, 1, 1000);	//主机查询终端命令, 发送1次, 最大等待时间为600ms
-						serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
-						//每个命令等待最多450ms的接收应答时间
+						SerialSendMsg sendMsg = ProtocolCommand.ServerQueryTerminalCmdMsg(serialNO, 1, 1000);	// 主机查询终端命令, 发送1次, 最大等待时间为600ms
+						serialCom.SendQueue_Enqueue(sendMsg);	// 发送出去
+						// 每个命令等待最多450ms的接收应答时间
 						DateTime SendTime = DateTime.Now;
-						while (((int)((DateTime.Now - SendTime).TotalMilliseconds) < 850) && !SerialNoDic[serialNO])		//若还没到450ms且还没接到响应, 则一直接收响应
+						while (((int)((DateTime.Now - SendTime).TotalMilliseconds) < 850) && !SerialNoDic[serialNO])		// 若还没到450ms且还没接到响应, 则一直接收响应
 						{
-							if (AllUserUpdateQueue.Count > 0)	//若队列中有消息, 则取出消息, 并判断终端序列号是否匹配
+							if (AllUserUpdateQueue.Count > 0)	// 若队列中有消息, 则取出消息, 并判断终端序列号是否匹配
 							{
 								SerialRecvMsg recvMsg = new SerialRecvMsg();
-								lock (AllUserUpdateQueue) { recvMsg = AllUserUpdateQueue.Dequeue(); }		//取出消息
-								if (AppUtil.IsBytesEqual(serialNO, 0, recvMsg.PacketData.DataFiled, 1, 4))	//若序列号匹配, 则记录该终端完成
+								lock (AllUserUpdateQueue) { recvMsg = AllUserUpdateQueue.Dequeue(); }		// 取出消息
+								if (AppUtil.IsBytesEqual(serialNO, 0, recvMsg.PacketData.DataFiled, 1, 4))	// 若序列号匹配, 则记录该终端完成
 								{
-									if (recvMsg.IsFromExtern)	//若是正确的响应, 则将标志位置true, 同时将消息推入队列
+									if (recvMsg.IsFromExtern)	// 若是正确的响应, 则将标志位置true, 同时将消息推入队列
 									{
 										SerialNoDic[serialNO] = true;
-										TerminalMsg.Add(serialNO, recvMsg);	//将接收到的消息加入队列中, 方便第3步的处理
-										//写入串口接收记录到日志文件中
+										TerminalMsg.Add(serialNO, recvMsg);	// 将接收到的消息加入队列中, 方便第3步的处理
+										// 写入串口接收记录到日志文件中
 										worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialRecv, recvMsg));
 										break;
 									}
-									else						//若是超时响应, 则判断是否是第二次发送命令了
+									else						// 若是超时响应, 则判断是否是第二次发送命令了
 									{
 										if (i > 0)	//若是第二次发送了, 则将超时消息推入队列
 											TerminalMsg.Add(serialNO, recvMsg);
-										//写入串口接收记录到日志文件中
+										// 写入串口接收记录到日志文件中
 										worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialTimeOut, recvMsg));
 									}
 								}
@@ -590,23 +590,23 @@ namespace SCBAControlHost
 				}
 			}
 
-			//3. 统一更新信息操作
+			// 3. 统一更新信息操作
 			foreach (byte[] serialNO in SerialNoKey)
 			{
-				if (MatchSerialNO(serialNO, 0))	//若序列号匹配
+				if (MatchSerialNO(serialNO, 0))	// 若序列号匹配
 				{
 					try
 					{
-						if (TerminalMsg[serialNO].IsFromExtern)	//若是从外部发来的, 则更新用户信息
+						if (TerminalMsg[serialNO].IsFromExtern)	// 若是从外部发来的, 则更新用户信息
 						{
 							lock (m_SyncContext) { m_SyncContext.Send(UpdateTerInfoByBytes, TerminalMsg[serialNO].PacketData.DataFiled); }
 						}
-						else						//若是内部消息, 表示超时, 则将用户状态改为"失去联系"
+						else						// 若是内部消息, 表示超时, 则将用户状态改为"失去联系"
 						{
 							UserStatusPara st = new UserStatusPara();
 							st.teriminalNO = TerminalMsg[serialNO].PacketData.DataFiled[4];
 							st.status = USERSTATUS.LoseContactStatus;
-							lock (m_SyncContext) { m_SyncContext.Send(ChangeUserState, st); }			//改变用户状态
+							lock (m_SyncContext) { m_SyncContext.Send(ChangeUserState, st); }			// 改变用户状态
 						}
 					}
 					catch (Exception ex)
@@ -619,26 +619,26 @@ namespace SCBAControlHost
 			isAllUserUpdating = false;
 		}
 
-		//全部撤出线程
+		// 全部撤出线程
 		public void AllUserEvacuate_Thread()
 		{
 			Dictionary<byte[], bool> SerialNoDic = new Dictionary<byte[], bool>();
 			Dictionary<byte[], SerialRecvMsg> TerminalMsg = new Dictionary<byte[], SerialRecvMsg>();
 			List<byte[]> SerialNoKey = new List<byte[]>();
 
-			//1. 首先找到当前不处于"关机"状态的终端, 并将它们存放到列表中
+			// 1. 首先找到当前不处于"关机"状态的终端, 并将它们存放到列表中
 			foreach (User user in users)
 			{
 				//if ((user.UStatus != USERSTATUS.PowerOffStatus) && (user.UStatus != USERSTATUS.RetreatingStatus))	//若用户状态不为"关机"和"撤出中"状态
-				if ((user.UStatus != USERSTATUS.PowerOffStatus))	//若用户状态不为"关机"
+				if ((user.UStatus != USERSTATUS.PowerOffStatus))	// 若用户状态不为"关机"
 				{
 					SerialNoDic.Add(AppUtil.IntSerialToBytes(user.BasicInfo.terminalGrpNO, user.BasicInfo.terminalNO), false);
 				}
 			}
 			SerialNoKey.AddRange(SerialNoDic.Keys);
 
-			//2. 开始一次对它们发送远程播报5命令(0x09)
-			//重发两次
+			// 2. 开始一次对它们发送远程播报5命令(0x09)
+			// 重发两次
 			for (int i = 0; i < 2; i++)
 			{
 				foreach (byte[] serialNO in SerialNoKey)
@@ -646,33 +646,33 @@ namespace SCBAControlHost
 					if (SerialNoDic[serialNO] == false)
 					{
 						SerialSendMsg sendMsg = ProtocolCommand.RemotePlaySoundCmdMsg(0x09, serialNO, 1, 1000);	//终端撤出命令, 发送1次, 最大等待时间为600ms
-						serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
+						serialCom.SendQueue_Enqueue(sendMsg);	// 发送出去
 						DateTime SendTime = DateTime.Now;
 						while (((int)((DateTime.Now - SendTime).TotalMilliseconds) < 850) && !SerialNoDic[serialNO])		//若还没到450ms且还没接到响应, 则一直接收响应
 						{
-							if (AllUserEvacuateQueue.Count > 0)	//若队列中有消息, 则取出消息, 并判断终端序列号是否匹配
+							if (AllUserEvacuateQueue.Count > 0)	// 若队列中有消息, 则取出消息, 并判断终端序列号是否匹配
 							{
 								SerialRecvMsg recvMsg = new SerialRecvMsg();
 								lock (AllUserEvacuateQueue) { recvMsg = AllUserEvacuateQueue.Dequeue(); }	//取出消息
 								if (AppUtil.IsBytesEqual(serialNO, 0, recvMsg.PacketData.DataFiled, 1, 4))	//若序列号匹配, 则记录该终端完成
 								{
-									if (recvMsg.IsFromExtern)	//若是正确的响应, 则将标志位置true, 同时将消息推入队列
+									if (recvMsg.IsFromExtern)	// 若是正确的响应, 则将标志位置true, 同时将消息推入队列
 									{
 										SerialNoDic[serialNO] = true;
 										if (!TerminalMsg.ContainsKey(serialNO))
-											TerminalMsg.Add(serialNO, recvMsg);	//将接收到的消息加入队列中, 方便第3步的处理
+											TerminalMsg.Add(serialNO, recvMsg);	// 将接收到的消息加入队列中, 方便第3步的处理
 										//写入串口接收记录到日志文件中
 										worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialRecv, recvMsg));
 										break;
 									}
-									else						//若是超时响应, 则判断是否是第二次发送命令了
+									else						// 若是超时响应, 则判断是否是第二次发送命令了
 									{
-										if (i > 0)	//若是第二次发送了, 则将超时消息推入队列
+										if (i > 0)	// 若是第二次发送了, 则将超时消息推入队列
 										{
 											if (!TerminalMsg.ContainsKey(serialNO))
 												TerminalMsg.Add(serialNO, recvMsg);
 										}
-										//写入串口接收记录到日志文件中
+										// 写入串口接收记录到日志文件中
 										worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialTimeOut, recvMsg));
 									}
 								}
@@ -685,17 +685,17 @@ namespace SCBAControlHost
 			//3. 统一更新用户状态操作
 			foreach (byte[] serialNO in SerialNoKey)
 			{
-				if (MatchSerialNO(serialNO, 0))	//若序列号匹配
+				if (MatchSerialNO(serialNO, 0))	// 若序列号匹配
 				{
 					try
 					{
 						UserStatusPara st = new UserStatusPara();
 						st.teriminalNO = TerminalMsg[serialNO].PacketData.DataFiled[4];
-						if (TerminalMsg[serialNO].IsFromExtern)	//若是从外部发来的, 则将用户状态改为"撤出中"
+						if (TerminalMsg[serialNO].IsFromExtern)	// 若是从外部发来的, 则将用户状态改为"撤出中"
 						{
 							st.status = USERSTATUS.RetreatingStatus;
 						}
-						else						//若是内部消息, 表示超时, 则将用户状态改为"撤出失败"
+						else						// 若是内部消息, 表示超时, 则将用户状态改为"撤出失败"
 						{
 							st.status = USERSTATUS.RetreatFailStatus;
 						}
@@ -713,7 +713,7 @@ namespace SCBAControlHost
 		#endregion
 
 		#region 网络相关线程
-		//处理网络接收数据包的线程
+		// 处理网络接收数据包的线程
 		public void NetPacketHandler()
 		{
 			NetPacket recvPacket;
@@ -723,34 +723,34 @@ namespace SCBAControlHost
 				netcom.NetRecvQueueWaitHandle.WaitOne();
 				RecvQueueItemCount = netcom.netRecvQueue.Count;
 
-				//若有数据包
+				// 若有数据包
 				if (RecvQueueItemCount > 0)
 				{
 					for (int n = 0; n < RecvQueueItemCount; n++)
 					{
 						lock (netcom.netRecvQueue) { recvPacket = netcom.netRecvQueue.Dequeue(); }
-						//写入网络接收记录到日志文件中
+						// 写入网络接收记录到日志文件中
 						worklog.LogQueue_Enqueue(LogCommand.getNetRecord(NetRecordType.NetRecv, recvPacket));
 						switch (recvPacket.PacketType)
 						{
 							//验证数据包
 							case 0x01:
-								//if (recvPacket.DataLength == 4)		//若验证包数据域长度为4才进行验证
+								//if (recvPacket.DataLength == 4)		// 若验证包数据域长度为4才进行验证
 								//    netcom.NetSendQueue_Enqueue(NetCommand.NetAuthPacket(recvPacket.datafield, SysConfig.Setting.accessAccount, SysConfig.Setting.accessPassword));
 								break;
 							//验证结果指示数据包
 							case 0x03:
-								if (recvPacket.datafield[0] == (byte)0x03)		//若校验成功
+								if (recvPacket.datafield[0] == (byte)0x03)		// 若校验成功
 									isAuthPass = true;
-								else											//若校验失败
+								else											// 若校验失败
 								{
 									isAuthPass = false;
-									if (isRealTimeUploading)		//若正在实时上传
+									if (isRealTimeUploading)		// 若正在实时上传
 									{
-										isRealTimeUploading = false;	//校验失败就不用继续实时上传了
+										isRealTimeUploading = false;	// 校验失败就不用继续实时上传了
 										pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.UploadImage; }));	//更换实时上传图片
 									}
-									//if (isInfoSyncing)				//若正在信息同步
+									//if (isInfoSyncing)				// 若正在信息同步
 									//{
 									//    isInfoSyncing = false;			//校验失败就不用继续信息同步了
 									//    pictureInfoSyncWait.Invoke(new Action(() => { pictureInfoSyncWait.Visible = false; }));			//隐藏正在同步图片
@@ -760,17 +760,17 @@ namespace SCBAControlHost
 								}
 								break;
 
-							//实时上传数据包
+							// 实时上传数据包
 							case 0x05:
 								break;
 
-							//心跳包
+							// 心跳包
 							case 0x30:
 								break;
 							default:
 								break;
 						}
-						//心跳包定时线程复位
+						// 心跳包定时线程复位
 						Console.WriteLine("接收到数据包" + DateTime.Now.ToString("hh:mm:ss-fff"));
 					}
 				}
@@ -784,24 +784,24 @@ namespace SCBAControlHost
 			{
 				if (isFormLoadDone)
 				{
-					//先ping一下主机, 看主机是否在线
+					// 先ping一下主机, 看主机是否在线
 					bool pingResult = AppUtil.PingServerAlive(SysConfig.Setting.serverIP, 1000);
 
-					if (pingResult)		//若主机在线
+					if (pingResult)		// 若主机在线
 					{
-						if (!isInternetAvailiable)	//若之前不在线, 则需要更新网络状态图标为"连接"
+						if (!isInternetAvailiable)	// 若之前不在线, 则需要更新网络状态图标为"连接"
 						{
 							btnInternetState.Invoke(new Action(() => { btnInternetState.BackgroundImage = Properties.Resources.wifi_connected_24px; }));
-							//写入网络连接记录到日志文件中
+							// 写入网络连接记录到日志文件中
 							worklog.LogQueue_Enqueue(LogCommand.getNetRecord(NetRecordType.Connect, null));
 						}
 						isInternetAvailiable = pingResult;
 
-						Thread.Sleep(10000);	//若主机在线, 则10s之后再ping
+						Thread.Sleep(10000);	// 若主机在线, 则10s之后再ping
 					}
 					else
 					{
-						if (isInternetAvailiable)	//若之前在线, 则需要更新网络状态图标为"未连接"
+						if (isInternetAvailiable)	// 若之前在线, 则需要更新网络状态图标为"未连接"
 						{
 							btnInternetState.Invoke(new Action(() => { btnInternetState.BackgroundImage = Properties.Resources.wifi_disconnected_24px; }));
 							//写入网络断开连接记录到日志文件中
@@ -820,7 +820,7 @@ namespace SCBAControlHost
 		{
 			isStartingRealUpload = true;	//进入 开启实时上传 线程
 
-			pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.Waiting; }));	//更换实时上传图片为等待
+			pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.Waiting; }));	// 更换实时上传图片为等待
 			btnUpLoad.Invoke(new Action(() => { btnUpLoad.Text = "正在连接"; }));
 			// 1. 开始3次连接服务器
 			for (int i = 0; i < 3; i++)
@@ -835,9 +835,9 @@ namespace SCBAControlHost
 
 			if (!netcom.isConnected)		//若未能连上服务器
 			{
-				pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.UploadImage; }));	//更换实时上传图片
+				pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.UploadImage; }));	// 更换实时上传图片
 				btnUpLoad.Invoke(new Action(() => { btnUpLoad.Text = "实时上传"; }));
-				worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.MainPanel, (int)BtnOfMainPanel.RTUpload, "2"));	//记录实时上传失败
+				worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.MainPanel, (int)BtnOfMainPanel.RTUpload, "2"));	// 记录实时上传失败
 				MessageBox.Show("连接服务器失败");
 				isStartingRealUpload = false;
 				return;
@@ -845,7 +845,7 @@ namespace SCBAControlHost
 
 			//若连上了服务器, 就开始验证
 			isAuthPass = false;
-			pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.Waiting; }));	//更换实时上传图片
+			pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.Waiting; }));	// 更换实时上传图片
 			btnUpLoad.Invoke(new Action(() => { btnUpLoad.Text = "正在验证"; }));
 			netcom.NetSendQueue_Enqueue(NetCommand.NetAuthPacket(null, SysConfig.Setting.accessAccount, SysConfig.Setting.accessPassword, SysConfig.Setting.serverIP));	//发送验证数据包
 			int cnt = 0;
@@ -859,26 +859,30 @@ namespace SCBAControlHost
 			if (isAuthPass == false)
 			{
 				isRealTimeUploading = false;
-				pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.UploadImage; }));	//更换实时上传图片
+				pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.UploadImage; }));	// 更换实时上传图片
 				btnUpLoad.Invoke(new Action(() => { btnUpLoad.Text = "实时上传"; }));
-				worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.MainPanel, (int)BtnOfMainPanel.RTUpload, "2"));	//记录实时上传失败
+				worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.MainPanel, (int)BtnOfMainPanel.RTUpload, "2"));	// 记录实时上传失败
 				MessageBox.Show("账号或密码错误, 连接服务器失败");
 				isStartingRealUpload = false;
 				return;
 			}
 
 			// 验证成功
-			pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.UploadingImage; }));		//更换实时上传图片为正在上传
+			pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.UploadingImage; }));		// 更换实时上传图片为正在上传
 			btnUpLoad.Invoke(new Action(() => { btnUpLoad.Text = "取消上传"; }));	//实时上传按钮文本改为"取消上传"
 			isRealTimeUploading = true;
-			worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.MainPanel, (int)BtnOfMainPanel.RTUpload, "1"));	//记录实时上传成功
+			worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.MainPanel, (int)BtnOfMainPanel.RTUpload, "1"));	// 记录实时上传成功
 			isStartingRealUpload = false;
 			//上传到服务器
-			if (isRealTimeUploading && netcom.isConnected && isAuthPass && isInternetAvailiable)	//若网络连接正常 且 验证通过 且 服务器在线
+			if (isRealTimeUploading && netcom.isConnected && isAuthPass && isInternetAvailiable)	// 若网络连接正常 且 验证通过 且 服务器在线
 			{
-				netcom.NetSendQueue_Enqueue(NetCommand.NetAddChangePacket(richTextBoxAddress.Text));	//上传任务
-				netcom.NetSendQueue_Enqueue(NetCommand.NetTaskChangePacket(richTextBoxTask.Text));		//上传地址
-				netcom.NetSendQueue_Enqueue(NetCommand.NetUploadUsersPacket(users));					//上传当前所有用户
+				string strTmp = "";
+				richTextBoxAddress.Invoke(new Action(() => { strTmp = richTextBoxAddress.Text; }));
+				netcom.NetSendQueue_Enqueue(NetCommand.NetAddChangePacket(strTmp));						// 上传任务
+				richTextBoxTask.Invoke(new Action(() => { strTmp = richTextBoxTask.Text; }));
+				netcom.NetSendQueue_Enqueue(NetCommand.NetTaskChangePacket(strTmp));					// 上传地址
+				richTextBoxAddress.Invoke(new Action(() => { strTmp = richTextBoxAddress.Text; }));
+				netcom.NetSendQueue_Enqueue(NetCommand.NetUploadUsersPacket(users));					// 上传当前所有用户
 			}
 		}
 

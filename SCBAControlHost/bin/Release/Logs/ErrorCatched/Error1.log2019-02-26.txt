@@ -59,3 +59,50 @@
 [Header]
  [Footer]
  
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ 2019-02-26 06:00:25,683 [网络发送数据线程] INFO  - 出现已捕获的异常：
+异常类型:System.IO.IOException
+异常信息:无法将数据写入传输连接: 你的主机中的软件中止了一个已建立的连接。。
+堆栈信息:   在 System.Net.Sockets.NetworkStream.Write(Byte[] buffer, Int32 offset, Int32 size)
+   在 System.IO.BinaryWriter.Write(Byte[] buffer, Int32 index, Int32 count)
+   在 SCBAControlHost.NetCommunication.NetCommunicate.DataPackSend(NetPacket packetSend) 位置 D:\Projects\nbbzyj_fire\FireFightingSystem-pc\SCBAControlHost_new\SCBAControlHost\NetCommunication\NetCommunicate.cs:行号 252
+
+
+
+
+[Header]
+ [Footer]
+ 
+
+
+[Header]
+ [Footer]
+ [Footer]
+ 
