@@ -118,8 +118,9 @@ namespace SCBAControlHost
 		TcpConnect = 9,				//连接TCP服务器
 		TcpDisconnect = 10,			//断开连接TCP服务器
 		Login = 11,					//登录Web服务器
-		Logout = 12,				//退出登录Web服务器
-	};
+		Logout = 12,                //退出登录Web服务器
+        NetSendViaHttp = 13,                //发送数据HTTP
+    };
 
 	public class LogCommand
 	{

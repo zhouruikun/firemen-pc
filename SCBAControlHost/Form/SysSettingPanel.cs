@@ -254,9 +254,11 @@ namespace SCBAControlHost
 			if (richTextSysSetServerAdd.Enabled == true)		//若处于可以修改的状态
 			{
 				//判断IP是否正确, 这里直接用IPAddress.Parse来尝试将IP地址进行解析, 若报异常则代表是无效的IP地址
-				bool isIpValid = false;
-				try{IPAddress ipAddress = IPAddress.Parse(richTextSysSetServerAdd.Text); isIpValid = true;}
-				catch (Exception ex) { Console.WriteLine(ex.Message); log.Info(AppUtil.getExceptionInfo(ex)); isIpValid = false; }
+				//bool isIpValid = false;
+                bool isIpValid = Uri.IsWellFormedUriString(richTextSysSetServerAdd.Text, UriKind.RelativeOrAbsolute);
+
+    //            try {IPAddress ipAddress = IPAddress.Parse(richTextSysSetServerAdd.Text); isIpValid = true;}
+				//catch (Exception ex) { Console.WriteLine(ex.Message); log.Info(AppUtil.getExceptionInfo(ex)); isIpValid = false; }
 				//若IP地址有效
 				if (isIpValid)
 				{

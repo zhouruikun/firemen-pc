@@ -10,6 +10,7 @@ using System.Net;
 using MyUtils;
 using log4net;
 using SCBAControlHost.SysConfig;
+using SCBAControlHost.MyUtils;
 
 namespace SCBAControlHost.NetCommunication
 {
@@ -70,9 +71,9 @@ namespace SCBAControlHost.NetCommunication
 		};
 
 		public bool isConnected = false;		//当前是否连接上服务器
-
-		//工作日志资源
-		public WorkLog worklog;
+        public bool isNeedHttpUpload = false;        //当前是否需要http上传
+                                                //工作日志资源
+        public WorkLog worklog;
 
 		public TcpClient client = new TcpClient();
 		public NetworkStream networkStream;
@@ -88,11 +89,17 @@ namespace SCBAControlHost.NetCommunication
 		public NetDelegate netDelegate;
 
 		private static ILog log = LogManager.GetLogger("ErrorCatched.Logging");//获取一个日志记录器
-
-		//构造函数
-		public NetCommunicate()
+        private SystemConfig sysConfig ;    //系统配置类
+        public SystemConfig SysConfig
+        {
+            get { SystemConfig sysCfgTmp; lock (sysConfig) { sysCfgTmp = sysConfig; } return sysCfgTmp; }
+            set { lock (sysConfig) { sysConfig = value; } }
+        }
+        //构造函数
+        public NetCommunicate(SystemConfig sysConfig)
 		{
-			Thread recvth = new Thread(RecvThread);	//接收数据的线程
+            this.sysConfig = sysConfig;
+            Thread recvth = new Thread(RecvThread);	//接收数据的线程
 			recvth.Name = "网络接收数据线程";
 			recvth.IsBackground = true;				//线程随主线程的退出而退出
 			recvth.Start();
@@ -166,6 +173,10 @@ namespace SCBAControlHost.NetCommunication
 			isConnected = false;
 		}
 
+        public void SetHttpSend(bool status)
+        {
+            isNeedHttpUpload = status;
+        }
 		/*********************************************************************************************/
 		#endregion
 
@@ -186,11 +197,16 @@ namespace SCBAControlHost.NetCommunication
 					for (int i = 0; i < SendQueueItemCount; i++)
 					{
 						lock (netSendQueue) { sendPacket = netSendQueue.Dequeue(); }	//取出数据包
-						if (client != null)
-						{
-							DataPackSend(sendPacket);		//发送出去
-						}
-					}
+						//if (client != null)
+						//{
+						//	DataPackSend(sendPacket);		//发送出去
+						//}
+                        if(isNeedHttpUpload)
+                        {
+                            DataPackSendViaHttp(sendPacket);		//发送出去
+                        }
+                      
+                    }
 				}
 
 			}
@@ -266,15 +282,63 @@ namespace SCBAControlHost.NetCommunication
 				}
 			}
 		}
+        //HTTP发送数据包的函数, 发送一个数据包
+        public void DataPackSendViaHttp(NetPacket packetSend)
+        {
+            if (packetSend != null)
+            {
+                byte[] sendBuf = new byte[packetSend.DataLength + 6];
+                sendBuf[0] = 0x5A;                              //起始符0
+                sendBuf[1] = 0xA5;                              //起始符1
+                sendBuf[2] = packetSend.PacketType;             //报类型
+                sendBuf[3] = packetSend.DataLength_HighByte;    //长度高字节
+                sendBuf[4] = packetSend.DataLength_LowByte;     //长度低字节
+                for (int i = 0; i < packetSend.DataLength; i++) //数据域
+                    sendBuf[5 + i] = packetSend.datafield[i];
+                //校验字节
+                if (packetSend.DataLength != 0)
+                    sendBuf[packetSend.DataLength + 5] = AppUtil.GetChecksum(new byte[4]{ packetSend.PacketType,
+                                                             packetSend.DataLength_HighByte,
+                                                             packetSend.DataLength_LowByte,
+                                                             AppUtil.GetChecksum(packetSend.datafield, 0, packetSend.DataLength)}, 0, 4);
+                else
+                    sendBuf[packetSend.DataLength + 5] = AppUtil.GetChecksum(new byte[3] { packetSend.PacketType, packetSend.DataLength_HighByte, packetSend.DataLength_LowByte }, 0, 3);
 
-		/*********************************************************************************************/
-		#endregion
+                //发送出去
+
+                try
+                {
+                    //设置各个访问页面
+                    string LoginURL = "http://" + SysConfig.Setting.serverIP + "/login";
+                    string UploadURL = "http://" + SysConfig.Setting.serverIP + "/uoloadData";
+                   
+                    //http 发送
+                    if (HttpHelper.UploadData(UploadURL, BitConverter.ToString(sendBuf)) == 1)//返回1 重新登陆
+                    {
+                        int LoginRes = HttpHelper.LoginServer(LoginURL, SysConfig.Setting.accessAccount, SysConfig.Setting.accessPassword);
+                    }
+
+                    //写入网络发送记录到日志文件中
+                    worklog.LogQueue_Enqueue(LogCommand.getNetRecord(NetRecordType.NetSendViaHttp, packetSend));
+                }
+                catch (Exception ex)    //发送数据异常, 判断是与主机断开连接
+                {
+                    Console.WriteLine(ex.Message);
+                    log.Info(AppUtil.getExceptionInfo(ex));
+                    isConnected = false;
+                }
+
+            }
+        }
+
+        /*********************************************************************************************/
+        #endregion
 
 
-		#region  接收部分函数
-		/*-----------------------------------------接收部分函数---------------------------------------*/
-		//接收数据的线程
-		private void RecvThread()
+        #region  接收部分函数
+        /*-----------------------------------------接收部分函数---------------------------------------*/
+        //接收数据的线程
+        private void RecvThread()
 		{
 			while (true)
 			{
@@ -402,7 +466,7 @@ namespace SCBAControlHost.NetCommunication
 		//将一个数据包投入发送队列中
 		public void NetSendQueue_Enqueue(NetPacket packetSend)
 		{
-			if (isConnected)
+			if (isConnected|| isNeedHttpUpload)
 			{
 				lock (netSendQueue) { netSendQueue.Enqueue(packetSend); }
 				NetSendQueueWaitHandle.Set();

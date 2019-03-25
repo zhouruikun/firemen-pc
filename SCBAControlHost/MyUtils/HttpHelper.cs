@@ -31,8 +31,9 @@ namespace SCBAControlHost.MyUtils
 				//request.AllowAutoRedirect = true;
 				request.KeepAlive = true;			//建立持久性连接
 				request.CookieContainer = cookieContainer;
+                request.Timeout = 3000;
 
-				if (httpHeader != null)
+                if (httpHeader != null)
 				{
 					foreach (string key in httpHeader.Keys)
 					{
@@ -66,6 +67,7 @@ namespace SCBAControlHost.MyUtils
 						requestStm.Write(postBytes, 0, postBytes.Length);
 					}
 				}
+         
 
 				//响应
 				response = (HttpWebResponse)request.GetResponse();
@@ -198,9 +200,43 @@ namespace SCBAControlHost.MyUtils
 
 			return res;
 		}
+        //上传数据
+        public static int UploadData(string PageURI, string data)
+        {
+            int res = 0;    //登录结果  0-网络问题  1-登录成功  2-密码错误
+            HttpWebResponse response = null;
+            try
+            {
+                //1. 获取登录页面
+                NameValueCollection header = new NameValueCollection();
+                header["Method"] = "POST";
+                byte[] tempBytes = Encoding.UTF8.GetBytes(data);
+                response = Request(PageURI, header, tempBytes, "HTTP");
+                if (response != null)
+                {
+                    if ((int)response.StatusCode < 400)
+                    {
 
-		//上传文件
-		public static bool UploadFile(string PageURI, string file)
+                        if (response.ResponseUri.AbsolutePath == "/login")       //如果响应是由Login页面发来的, 则重新登陆
+                            res = 1;
+                        else
+                        {
+                            res = 2;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                res = 0;
+            }
+
+            return res;
+        }
+
+        //上传文件
+        public static bool UploadFile(string PageURI, string file)
 		{
 			bool res = false;
 			HttpWebResponse response = null;

@@ -74,11 +74,11 @@ namespace SCBAControlHost
 		#endregion
 
 		#region 网络相关变量
-		NetCommunicate netcom = new NetCommunicate();
+		NetCommunicate netcom =null;
 		public bool isInternetAvailiable = false;	//网络是否有效标志
 
-		public bool isStartingRealUpload = false;	//是否正在开启实时上传
-		public bool isAuthPass = false;				//是否验证通过
+		public bool isStartingRealUpload = false;   //是否正在开启实时上传
+        public bool isAuthPass = false;				//是否验证通过
 		public bool isRealTimeUploading = false;	//是否正在实时上传
 		public bool isInfoSyncing = false;			//当前是否正在信息同步中
 		string LatestLogName = null;				//服务器上最新的日志文件名称
@@ -219,12 +219,12 @@ namespace SCBAControlHost
 				labelUnit.Text = "单位：" + SysConfig.Setting.unitName;
 				labelGrpNumber.Text = "组号：" + SysConfig.Setting.groupNumber.ToString("D8");
 			}
+            netcom = new NetCommunicate(SysConfig);
+            #endregion
 
-			#endregion
-
-			#region 为窗口和控件 订阅事件
-			//为窗口和控件 订阅事件
-			btnUserEvacuate.MouseDown += new System.Windows.Forms.MouseEventHandler(btnRecPress);		//图片按钮的图片切换
+            #region 为窗口和控件 订阅事件
+            //为窗口和控件 订阅事件
+            btnUserEvacuate.MouseDown += new System.Windows.Forms.MouseEventHandler(btnRecPress);		//图片按钮的图片切换
 			btnUserEvacuate.MouseUp += new System.Windows.Forms.MouseEventHandler(btnRecPop);			//图片按钮的图片切换
 			btnAllUserEvacuate.MouseDown += new System.Windows.Forms.MouseEventHandler(btnRecPress);	//图片按钮的图片切换
 			btnAllUserEvacuate.MouseUp += new System.Windows.Forms.MouseEventHandler(btnRecPop);		//图片按钮的图片切换
@@ -707,11 +707,14 @@ namespace SCBAControlHost
 					{
 						if (isInternetAvailiable)	//若服务器在线
 						{
-							Thread StartRealUploadth = new Thread(StartRealUpload);		//开启实时上传线程
-							StartRealUploadth.Name = "实时上传线程";
+                            //Thread StartRealUploadth = new Thread(StartRealUpload);		//开启实时上传线程
+                            Thread StartRealUploadth = new Thread(StartRealUploadViaHttp);		//开启实时上传线程
+                            StartRealUploadth.Name = "实时上传线程";
 							StartRealUploadth.IsBackground = true;
 							StartRealUploadth.Start();
-						}
+                            netcom.SetHttpSend(true);//http新增
+                            isRealTimeUploading = true;
+                        }
 						else
 							MessageBox.Show("服务器未在线");
 					}
@@ -722,10 +725,11 @@ namespace SCBAControlHost
 					isRealTimeUploading = false;
 					pictureBoxUpload.Image = Properties.Resources.UploadImage;
 					btnUpLoad.Text = "实时上传";
-					// 2. 断开网络连接
-					netcom.NetClose();
-					//停止上传记录
-					worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.MainPanel, (int)BtnOfMainPanel.RTUpload, "3"));
+                    // 2. 断开网络连接
+                    //netcom.NetClose();
+                    netcom.SetHttpSend(false);//http新增
+                    //停止上传记录
+                    worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.MainPanel, (int)BtnOfMainPanel.RTUpload, "3"));
 					//写入网络断开TCP连接记录到日志文件中
 					worklog.LogQueue_Enqueue(LogCommand.getNetRecord(NetRecordType.TcpDisconnect, null));
 				}

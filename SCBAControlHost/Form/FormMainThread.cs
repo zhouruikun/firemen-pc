@@ -784,8 +784,9 @@ namespace SCBAControlHost
 			{
 				if (isFormLoadDone)
 				{
-					// 先ping一下主机, 看主机是否在线
-					bool pingResult = AppUtil.PingServerAlive(SysConfig.Setting.serverIP, 1000);
+                    // 先ping一下主机, 看主机是否在线
+                    string ip = SysConfig.Setting.serverIP.Split(':')[0];
+                    bool pingResult = AppUtil.PingServerAlive(ip, 1000);
 
 					if (pingResult)		// 若主机在线
 					{
@@ -820,7 +821,7 @@ namespace SCBAControlHost
 		{
 			isStartingRealUpload = true;	//进入 开启实时上传 线程
 
-			pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.Waiting; }));	// 更换实时上传图片为等待
+            pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.Waiting; }));	// 更换实时上传图片为等待
 			btnUpLoad.Invoke(new Action(() => { btnUpLoad.Text = "正在连接"; }));
 			// 1. 开始3次连接服务器
 			for (int i = 0; i < 3; i++)
@@ -885,9 +886,25 @@ namespace SCBAControlHost
 				netcom.NetSendQueue_Enqueue(NetCommand.NetUploadUsersPacket(users));					// 上传当前所有用户
 			}
 		}
-
-		//网络意外断开时调用的处理函数
-		void netDelegate_myEvent(object obj)
+        //开启实时上传线程
+        void StartRealUploadViaHttp()
+        {
+            if (isRealTimeUploading && isInternetAvailiable)    // 若网络连接正常 且 服务器在线
+            {
+                netcom.SetHttpSend(true);
+                pictureBoxUpload.Invoke(new Action(() => { pictureBoxUpload.Image = Properties.Resources.UploadingImage; }));       // 更换实时上传图片为正在上传
+                btnUpLoad.Invoke(new Action(() => { btnUpLoad.Text = "取消上传"; }));	//实时上传按钮文本改为"取消上传"
+                string strTmp = "";
+                richTextBoxAddress.Invoke(new Action(() => { strTmp = richTextBoxAddress.Text; }));
+                netcom.NetSendQueue_Enqueue(NetCommand.NetAddChangePacket(strTmp));                     // 上传任务
+                richTextBoxTask.Invoke(new Action(() => { strTmp = richTextBoxTask.Text; }));
+                netcom.NetSendQueue_Enqueue(NetCommand.NetTaskChangePacket(strTmp));                    // 上传地址
+                richTextBoxAddress.Invoke(new Action(() => { strTmp = richTextBoxAddress.Text; }));
+                netcom.NetSendQueue_Enqueue(NetCommand.NetUploadUsersPacket(users));                    // 上传当前所有用户
+            }
+        }
+        //网络意外断开时调用的处理函数
+        void netDelegate_myEvent(object obj)
 		{
 			if (isRealTimeUploading)	//若当前正在实时上传
 			{
