@@ -24,11 +24,15 @@ namespace SCBAControlHost.SysConfig
 		public int alarmThreshold;		//报警点		0--50%  1--10MPa  2--6MPa
 		public int groupNumber;		//组号
 		public String systemPassword = "888888";	//系统密码
+		public Dictionary<byte, int> channelDic = new Dictionary<byte, int>();	//信道字典key为byte型的信道号, value为int型的组号(不包含终端号)
+		public int ChannelIndex = 0;
 	}
 
 	public class SystemConfig
 	{
 		private static ILog log = LogManager.GetLogger("ErrorCatched.Logging");//获取一个日志记录器
+
+		public byte[] ChannelList = new byte[15] { 20, 22, 26, 18, 28, 16, 21, 27, 19, 17, 29, 15, 14, 12, 11 };
 
 		private SystemSetting setting = null;
 		public SystemSetting Setting
@@ -125,6 +129,11 @@ namespace SCBAControlHost.SysConfig
 			setting.alarmThreshold = 0;
 			setting.groupNumber = 3;
 			setting.systemPassword = "888888";
+
+			//创建信道列表
+			for (int i = 0; i < 15; i++ )
+				setting.channelDic.Add(ChannelList[i], -1);
+			setting.ChannelIndex = 1;
 
 			SaveSystemSetting(setting);
 		}

@@ -56,7 +56,7 @@ namespace SCBAControlHost
 		//string[] ComKeyStr = new string[] { "Silicon Labs", "USB to UART" };		//串口关键字
 		string[] ComKeyStr = new string[] { "ELTIMA Virtual Serial Port" };			//串口关键字
 		Thread recvMsgThread;						//接收消息的线程
-		Dictionary<byte, int> channelDic = new Dictionary<byte, int>();	//信道字典key为byte型的信号下标号, value为int型的组号(不包含终端号)
+		
 		SerialComDebug comDebugForm = new SerialComDebug();		//调试窗口资源
 		int[] SerialBaudLUT = new int[8] { 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200 };	//串口波特率查找表
 		bool isSerialShouldOpen = true;
@@ -379,22 +379,22 @@ namespace SCBAControlHost
 			#endregion
 
 			#region 创建信道列表
-			//创建信道列表
-			channelDic.Add(20, -1);
-			channelDic.Add(22, -1);
-			channelDic.Add(26, -1);
-			channelDic.Add(18, -1);
-			channelDic.Add(28, -1);
-			channelDic.Add(16, -1);
-			channelDic.Add(21, -1);
-			channelDic.Add(27, -1);
-			channelDic.Add(19, -1);
-			channelDic.Add(17, -1);
-			channelDic.Add(29, -1);
-			channelDic.Add(15, -1);
-			channelDic.Add(14, -1);
-			channelDic.Add(12, -1);
-			channelDic.Add(11, -1);
+			////创建信道列表
+			//sysConfig.Setting.channelDic.Add(20, -1);
+			//sysConfig.Setting.channelDic.Add(22, -1);
+			//sysConfig.Setting.channelDic.Add(26, -1);
+			//sysConfig.Setting.channelDic.Add(18, -1);
+			//sysConfig.Setting.channelDic.Add(28, -1);
+			//sysConfig.Setting.channelDic.Add(16, -1);
+			//sysConfig.Setting.channelDic.Add(21, -1);
+			//sysConfig.Setting.channelDic.Add(27, -1);
+			//sysConfig.Setting.channelDic.Add(19, -1);
+			//sysConfig.Setting.channelDic.Add(17, -1);
+			//sysConfig.Setting.channelDic.Add(29, -1);
+			//sysConfig.Setting.channelDic.Add(15, -1);
+			//sysConfig.Setting.channelDic.Add(14, -1);
+			//sysConfig.Setting.channelDic.Add(12, -1);
+			//sysConfig.Setting.channelDic.Add(11, -1);
 			#endregion
 
 			#region 网络通信配置
