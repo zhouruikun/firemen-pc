@@ -28,7 +28,7 @@ namespace SCBAControlHost
 			while (true)
 			{
 				serialCom.RecvQueueWaitHandle.WaitOne();				//等待接受队列中有数据
-				RecvQueueItemCount = serialCom.SerialRecvQueue.Count;	//查询接收队列中有几个数据
+				RecvQueueItemCount = serialCom.SerialRecvQueue.Count;	//查询接收队列中有几个数据1
 				if (RecvQueueItemCount > 0)								//若接收队列中有数据
 				{
 					for (int n = 0; n < RecvQueueItemCount; n++)		//则依次将数据取出来, 进行处理
@@ -492,8 +492,9 @@ namespace SCBAControlHost
 		public void AlarmPlaySound()
 		{
 			bool isShouldPlaySound = false;		// 是否应该播放声音
-			//SoundPlayer AlarmSound = new SoundPlayer(Properties.Resources.Alarm);	// 报警音频
-			SoundPlayer AlarmSound = new SoundPlayer(@"./res/Sound/Alarm.wav");		// 报警音频
+			SoundPlayer AlarmSound = null;		// 报警音频
+			try { AlarmSound = new SoundPlayer(@"./res/Sound/Alarm.wav"); }
+			catch(Exception ex) {Console.WriteLine(ex.Message);}
 			bool isPlayingAlarmSound = false;										// 是否正在播放声音
 			while (true)
 			{
@@ -516,7 +517,11 @@ namespace SCBAControlHost
 				{
 					if (isPlayingAlarmSound == false)	// 若当前没有在播放, 则播放
 					{
-						AlarmSound.PlayLooping();
+						if (AlarmSound != null)
+						{
+							try { AlarmSound.PlayLooping(); }
+							catch (Exception ex) { Console.WriteLine(ex.Message); }
+						}
 						isPlayingAlarmSound = true;
 					}
 				}
@@ -524,7 +529,11 @@ namespace SCBAControlHost
 				{
 					if (isPlayingAlarmSound == true)	// 若当前正在播放, 则停止播放
 					{
-						AlarmSound.Stop();
+						if (AlarmSound != null)
+						{
+							try { AlarmSound.Stop(); }
+							catch (Exception ex) { Console.WriteLine(ex.Message); }
+						}
 						isPlayingAlarmSound = false;
 					}
 				}

@@ -99,7 +99,9 @@
     <Compile Include="Form\FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form\FormMainCall.cs" />
+    <Compile Include="Form\FormMainCall.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Form\FormMainThread.cs">
       <SubType>Form</SubType>
     </Compile>
