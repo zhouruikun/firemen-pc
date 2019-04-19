@@ -81,7 +81,7 @@ namespace SCBAControlHost
 									{
 										ServerRole = 1;			//确定主机角色为控制主机
 										Console.WriteLine("主机角色: 区域主机");
-										channelDic[20] = SysConfig.Setting.groupNumber;
+										sysConfig.Setting.channelDic[20] = SysConfig.Setting.groupNumber;
 										//写入串口超时记录到日志文件中
 										worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialTimeOut, recvMsg));
 									}
@@ -247,7 +247,7 @@ namespace SCBAControlHost
 										{
 											if (ServerRole == 1)	//自己是控制主机
 											{
-												foreach (var channel in channelDic)	//查找字典中是否存在已分配信道的主机
+												foreach (var channel in sysConfig.Setting.channelDic)	//查找字典中是否存在已分配信道的主机
 												{
 													if (channel.Value == grpNo)		//若存在已分配信道的主机
 													{
@@ -294,7 +294,7 @@ namespace SCBAControlHost
 										{
 											byte tmpKey = 255;
 											//查询当前已存在的信道下标号
-											foreach (var channel in channelDic)
+											foreach (var channel in sysConfig.Setting.channelDic)
 											{
 												if (channel.Value == grpNo)
 												{
@@ -306,7 +306,7 @@ namespace SCBAControlHost
 											// 当不存在同号的主机, 则查询空闲的信道
 											if (tmpKey == 255)
 											{
-												foreach (var channel in channelDic)
+												foreach (var channel in sysConfig.Setting.channelDic)
 												{
 													if (channel.Value == -1)
 													{
@@ -317,11 +317,21 @@ namespace SCBAControlHost
 												//为其他主机分配信道
 												if (tmpKey > 0 && tmpKey < 30)	//当前有可用信道
 												{
-													channelDic[tmpKey] = AppUtil.bytesToInt(recvMsg.PacketData.DataFiled, 1, 3);	//获取其他主机的组号转为int型
+													sysConfig.Setting.channelDic[tmpKey] = AppUtil.bytesToInt(recvMsg.PacketData.DataFiled, 1, 3);	//获取其他主机的组号转为int型
+													sysConfig.Setting.ChannelIndex++;
+													if (sysConfig.Setting.ChannelIndex >= 15) sysConfig.Setting.ChannelIndex = 0;
+													SysConfig.SaveSystemSetting(SysConfig.Setting);
 													byte[] tarGrpNo = new byte[4];
 													Array.Copy(recvMsg.PacketData.DataFiled, 1, tarGrpNo, 0, 4);	//复制目标主机序列号
 													SerialSendMsg sendMsg = ProtocolCommand.ServerQueryAckMsg(tarGrpNo, SysConfig.getSerialNOBytes(), tmpKey);	//返回响应
 													serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
+												}
+												else							// 当前无可用信道
+												{
+													sysConfig.Setting.channelDic[sysConfig.ChannelList[sysConfig.Setting.ChannelIndex]] = AppUtil.bytesToInt(recvMsg.PacketData.DataFiled, 1, 3);	//获取其他主机的组号转为int型
+													sysConfig.Setting.ChannelIndex++;
+													if (sysConfig.Setting.ChannelIndex >= 15) sysConfig.Setting.ChannelIndex = 0;
+													SysConfig.SaveSystemSetting(SysConfig.Setting);
 												}
 											}
 											else		// 组号已存在信道列表中
