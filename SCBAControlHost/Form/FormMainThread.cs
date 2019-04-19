@@ -226,12 +226,12 @@ namespace SCBAControlHost
 											else
 											{
 												int index = GetIndexBySerialNO(recvMsg.PacketData.DataFiled[4]);	//获取终端在用户列表中的下标位置
-												if (users[index].PowerupCount == 0)	//若是第一次发送开机注册
-												{
-													users[index].PowerupCount++;
-												}
-												else								//若是第2次发送开机注册了
-												{
+												if (false)//users[index].PowerupCount == 0) //若是第一次发送开机注册
+                                                {
+                                                    users[index].PowerupCount++;
+                                                }
+                                                else                                //修正逻辑 只要是开机注册就返回
+                                                {
 													//发送响应
 													SerialSendMsg sendMsg = ProtocolCommand.TerminalPowerOnAckMsg(AppUtil.ExtractBytes(recvMsg.PacketData.DataFiled, 1, 4));	//先回复"开机注册"的响应
 													serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
@@ -453,7 +453,8 @@ namespace SCBAControlHost
 				}
 
 				// 周期25s检测终端掉线
-				if (LostConnectCnt < 25)
+                //修改為95s
+				if (LostConnectCnt < 95)
 				{
 					LostConnectCnt++;
 				}

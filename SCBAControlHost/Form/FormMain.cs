@@ -1578,7 +1578,7 @@ namespace SCBAControlHost
 			if (dr == DialogResult.Yes)
 			{
 				//Process.Start("shutdown.exe", "-l");//注销
-				Process.Start("shutdown.exe", "-s");		//关机
+				Process.Start("shutdown.exe", "-s -t 0");		//关机
 				FormMain_FormClosing(null, null);
 			}
 			else if (dr == DialogResult.No)
