@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using SCBAControlHost.MyUtils;
 using SCBAControlHost.SerialCommunication;
 using MyUtils;
+using System.Threading;
 
 namespace SCBAControlHost
 {
@@ -13,8 +14,9 @@ namespace SCBAControlHost
 	{
 		private int ChangeNOOldSerialNO = 0;
 		private int ChangeNONewSerialNO = 0;
-
-		private void UserChangeNOInit()
+        private int ChangeNONewSerialNO_forChannal = 0;
+        private int ChangeNONewChannal = 0;
+        private void UserChangeNOInit()
 		{
 			btnUserChangeNOOK.MouseDown += new System.Windows.Forms.MouseEventHandler(btnCircularPress_y);
 			btnUserChangeNOOK.MouseUp += new System.Windows.Forms.MouseEventHandler(btnCircularPop_y);
@@ -24,7 +26,6 @@ namespace SCBAControlHost
 			btnUserChangeNOOK.Click += new EventHandler(btnUserChangeNOOK_Click);
 			btnUserChangeNOReturn.Click += new EventHandler(btnUserChangeNOReturn_Click);
 		}
-
 		//确认改号按钮点击事件
 		void btnUserChangeNOOK_Click(object sender, EventArgs e)
 		{
@@ -53,16 +54,35 @@ namespace SCBAControlHost
 										//检查新用户号是否超出范围
 										if (int.Parse(richTextNewDevNO.Text) < 33)
 										{
-											//全部检查完毕没有问题
-											richTextUserChangeNOStatus.Text = "";		//状态栏清空
-											ChangeNOOldSerialNO = (int.Parse(richTextOldGrpNO.Text) << 8) | (int.Parse(richTextOldDevNO.Text));
-											ChangeNONewSerialNO = (int.Parse(richTextNewGrpNO.Text) << 8) | (int.Parse(richTextNewDevNO.Text));
-
-											//发送临时组队命令
-											SerialSendMsg sendMsg = ProtocolCommand.ParaSetup1CmdMsg(AppUtil.IntToBytes(ChangeNOOldSerialNO), AppUtil.IntToBytes(ChangeNONewSerialNO));
-											serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
-											//写入按钮点击记录
-											worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.UserChangeNOPanel, (int)BtnOfUserChangeNOPanel.StartChangeNO, ChangeNOOldSerialNO.ToString("X8") + " " + ChangeNONewSerialNO.ToString("X8")));
+                                            //检查信道号是否是数字
+                                            if (RegexUtil.RegexCheckNumber(richTextNewChannal.Text))
+                                            {
+                                                ChangeNONewChannal = int.Parse(richTextNewChannal.Text);
+                                                //检查信道号是否超出范围
+                                                if (ChangeNONewChannal < 31 && (ChangeNONewChannal<23|| ChangeNONewChannal >25))
+                                                {
+                                                    //全部检查完毕没有问题
+                                                    richTextUserChangeNOStatus.Text = "";       //状态栏清空
+                                                    ChangeNOOldSerialNO = (int.Parse(richTextOldGrpNO.Text) << 8) | (int.Parse(richTextOldDevNO.Text));
+                                                    ChangeNONewSerialNO = (int.Parse(richTextNewGrpNO.Text) << 8) | (int.Parse(richTextNewDevNO.Text));
+                                                    ChangeNONewSerialNO_forChannal = ChangeNONewSerialNO;                                                 //发送临时组队命令
+                                                   SerialSendMsg sendMsg = ProtocolCommand.ParaSetup1CmdMsg(AppUtil.IntToBytes(ChangeNOOldSerialNO), AppUtil.IntToBytes(ChangeNONewSerialNO));
+                                                    //发送切换信道命令
+                                                    serialCom.SendQueue_Enqueue(sendMsg);   //发送出去
+                                                    ChangeNONewChannal = int.Parse(richTextNewChannal.Text);
+                                                    Thread th = new Thread(new ThreadStart(ThreadSwitch)); //创建线程                     
+                                                    th.Start(); //启动线程
+                                                    //写入按钮点击记录
+                                                    worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.UserChangeNOPanel, (int)BtnOfUserChangeNOPanel.StartChangeNO, ChangeNOOldSerialNO.ToString("X8") + " " + ChangeNONewSerialNO.ToString("X8")));
+                                                }
+                                                else
+                                                {
+                                                    MessageBox.Show("信道必须小于30,切不能为23 24 25");
+                                                }
+                                            }
+                                            else
+                                                MessageBox.Show("信道必须是数字");
+                                           
 										}
 										else
 											MessageBox.Show("新用户号必须小于33");
@@ -88,16 +108,21 @@ namespace SCBAControlHost
 			else
 				MessageBox.Show("原组号必须为数字形式");
 		}
-
-		//返回按钮点击事件
-		void btnUserChangeNOReturn_Click(object sender, EventArgs e)
+        //切换信道
+        void ThreadSwitch()
+        {
+            Thread.Sleep(3000);//如果不延时，将占用CPU过高  
+            //设定延时任务 目的是避免在设置连续三次命令的时候插进去
+            SerialSendMsg sendMsg = ProtocolCommand.TerminalSwitchCmdMsg(AppUtil.IntToBytes(ChangeNONewSerialNO_forChannal), AppUtil.IntToBytes(ChangeNONewSerialNO_forChannal), (byte)ChangeNONewChannal);//发送终端切换命令
+            serialCom.SendQueue_Enqueue(sendMsg);   //发送出去
+        }
+        //返回按钮点击事件
+        void btnUserChangeNOReturn_Click(object sender, EventArgs e)
 		{
 			PanelSwitch(CurPanel.EpanelSysSetting);
 			//写入按钮点击记录
 			worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.UserChangeNOPanel, (int)BtnOfUserChangeNOPanel.ChangeNOReturn, null));
 		}
-
-		
 
 	}
 }

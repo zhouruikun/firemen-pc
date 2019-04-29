@@ -155,8 +155,9 @@ namespace SCBAControlHost
 			richTextSysSetPwd.Enabled = false;				//服务器密码 enabled置为false
 			comboBoxSysSetThres.Enabled = false;			//报警阈值下拉框 enabled置为false
 			btnThresList.Enabled = false;					//报警阈值下拉按钮 enabled置为false
-			richTextSysSetGrpNO.Enabled = false;			//组号 enabled置为false
-			richTextSysSetSysPwd.Enabled = false;			//系统密码 enabled置为false
+			richTextSysSetGrpNO.Enabled = false;            //组号 enabled置为false
+            richTextSysSetChannal.Enabled = false;
+            richTextSysSetSysPwd.Enabled = false;			//系统密码 enabled置为false
 		}
 
 		//显示面板切换
@@ -511,7 +512,8 @@ namespace SCBAControlHost
 						{
 							try
 							{
-								bool IsUserExceedTh = false;	//用户是否超出阈值标识
+                                users[index].AlarmFlagForLost = false;
+                                bool IsUserExceedTh = false;	//用户是否超出阈值标识
 
 								//1. 分析用户是否超阈值, 存储在标志IsUserExceedTh中
 								if (SysConfig.Setting.alarmThreshold == 0)			//若设定阈值为气瓶容量的50%

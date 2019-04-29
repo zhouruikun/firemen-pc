@@ -37,7 +37,7 @@ namespace SCBAControlHost
 						if (recvMsg != null)
 						{
 							// 初始化第0阶段, 确定区域主机 或 控制主机角色
-							if (ServerRole == 0)	//若主机角色还没定下来
+							if (false)	//若主机角色还没定下来ServerRole ==
 							{
 								if (recvMsg.PacketData.Cmd == 0x32)		//若为主机查询消息
 								{
@@ -154,27 +154,49 @@ namespace SCBAControlHost
 											}
 										}
 										break;
-									#endregion
+                                    #endregion
 
-									#region 终端上传主机 0x13, 0x14
-									//终端上传主机
-									case 0x13:
-										if (MatchSerialNO(recvMsg.PacketData.DataFiled, 1))	//若确实是本组终端, 则更新信息, 同时返回响应
-										{
-											lock (m_SyncContext) { m_SyncContext.Send(UpdateTerInfoByBytes, recvMsg.PacketData.DataFiled); }		//更新信息
-											SerialSendMsg sendMsg = ProtocolCommand.TerminalUploadCmdAckMsg(recvMsg.PacketData.DataFiled);		//返回响应
-											serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
-											//写入串口接收记录到日志文件中
-											worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialRecv, recvMsg));
-										}
-										break;
-									case 0x14:
-										break;
-									#endregion
+                                    #region 终端上传主机 0x13, 0x14
+                                    //终端上传主机
+                                    case 0x13:
+                                        if (MatchGrpNO(recvMsg.PacketData.DataFiled, 1))    //若组号匹配
+                                        {
+                                            if (MatchSerialNO(recvMsg.PacketData.DataFiled, 1)) //若终端号在当前用户列表中存在, 则更新信息, 同时返回响应
+                                            {
+                                                lock (m_SyncContext) { m_SyncContext.Send(UpdateTerInfoByBytes, recvMsg.PacketData.DataFiled); }        //更新信息
+                                                SerialSendMsg sendMsg = ProtocolCommand.TerminalUploadCmdAckMsg(recvMsg.PacketData.DataFiled);      //返回响应
+                                                serialCom.SendQueue_Enqueue(sendMsg);   //发送出去
+                                                                                        //写入串口接收记录到日志文件中
+                                                worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialRecv, recvMsg));
+                                            }
+                                            else                                                // 若终端号在当前用户列表中不存在, 则添加用户
+                                            {
+                                                UserBasicInfo basicInfo = new UserBasicInfo();
+                                                basicInfo.terminalGrpNO = SysConfig.Setting.groupNumber;
+                                                basicInfo.terminalNO = recvMsg.PacketData.DataFiled[4];
+                                                basicInfo.terminalCapSpec = "6.8";  //默认的气瓶容量
+                                                lock (m_SyncContext) { m_SyncContext.Send(AddUser, basicInfo); }            //新增用户
+                                                int index = GetIndexBySerialNO(recvMsg.PacketData.DataFiled[4]);    //获取终端在用户列表中的下标位置
+                                                users[index].PowerupCount++;
+                                                //写入日志文件中
+                                                worklog.LogQueue_Enqueue(LogCommand.getUserUpdateRecord(2, null, users[index]));    //单个用户加入记录
 
-									#region 主机查询终端 0x15, 0x16	(刷新操作)
-									//主机查询终端
-									case 0x15:
+                                                lock (m_SyncContext) { m_SyncContext.Send(UpdateTerInfoByBytes, recvMsg.PacketData.DataFiled); }        //更新信息
+                                                SerialSendMsg sendMsg = ProtocolCommand.TerminalUploadCmdAckMsg(recvMsg.PacketData.DataFiled);      //返回响应
+                                                serialCom.SendQueue_Enqueue(sendMsg);   //发送出去
+                                                                                        //写入串口接收记录到日志文件中
+                                                worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialRecv, recvMsg));
+                                            }
+                                        }
+
+                                        break;
+                                    case 0x14:
+                                        break;
+                                    #endregion
+
+                                    #region 主机查询终端 0x15, 0x16	(刷新操作)
+                                    //主机查询终端
+                                    case 0x15:
 										break;
 									case 0x16:
 										if (MatchSerialNO(recvMsg.PacketData.DataFiled, 1))	//若序列号匹配

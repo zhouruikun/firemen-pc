@@ -136,8 +136,8 @@ namespace SCBAControlHost
 		#region 主窗口
 		public FormMain()
 		{
-			#region 外部程序调用
-			/*try
+            #region 外部程序调用
+            /*try
 			{
 				if (TouchKeyboardProcess == null)
 				{
@@ -160,13 +160,22 @@ namespace SCBAControlHost
 			{
 				Console.WriteLine(ex.Message);
 			}*/
-			#endregion
+            #endregion
 
-			#region 音量调整到最大
+            #region 音量调整到最大
+            try
+            {
 			CoreAudioApi.MMDeviceEnumerator devices = new MMDeviceEnumerator();
 			MMDevice device = devices.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
 			device.AudioEndpointVolume.Mute = false;
 			device.AudioEndpointVolume.MasterVolumeLevelScalar = (float)1;
+            }
+            catch
+            {
+                MessageBox.Show("请检查声卡设备");
+
+            }
+
 			#endregion
 
 			#region 界面初始化
@@ -227,8 +236,10 @@ namespace SCBAControlHost
             btnUserEvacuate.MouseDown += new System.Windows.Forms.MouseEventHandler(btnRecPress);		//图片按钮的图片切换
 			btnUserEvacuate.MouseUp += new System.Windows.Forms.MouseEventHandler(btnRecPop);			//图片按钮的图片切换
 			btnAllUserEvacuate.MouseDown += new System.Windows.Forms.MouseEventHandler(btnRecPress);	//图片按钮的图片切换
-			btnAllUserEvacuate.MouseUp += new System.Windows.Forms.MouseEventHandler(btnRecPop);		//图片按钮的图片切换
-			btnStopAlarm.MouseDown += new System.Windows.Forms.MouseEventHandler(btnRecPress);			//图片按钮的图片切换
+			btnAllUserEvacuate.MouseUp += new System.Windows.Forms.MouseEventHandler(btnRecPop);        //图片按钮的图片切换
+            btnResetEvacuate.MouseDown += new System.Windows.Forms.MouseEventHandler(btnRecPress);    //图片按钮的图片切换
+            btnResetEvacuate.MouseUp += new System.Windows.Forms.MouseEventHandler(btnRecPop);        //图片按钮的图片切换
+            btnStopAlarm.MouseDown += new System.Windows.Forms.MouseEventHandler(btnRecPress);			//图片按钮的图片切换
 			btnStopAlarm.MouseUp += new System.Windows.Forms.MouseEventHandler(btnRecPop);				//图片按钮的图片切换
 			btnUserUpdate.MouseDown += new System.Windows.Forms.MouseEventHandler(btnRecPress);			//图片按钮的图片切换
 			btnUserUpdate.MouseUp += new System.Windows.Forms.MouseEventHandler(btnRecPop);				//图片按钮的图片切换
@@ -240,7 +251,9 @@ namespace SCBAControlHost
 			btnAllUserEvacuate.Click += new EventHandler(btnAllUserEvacuate_Click);		//全部撤出 按钮点击事件
 			btnUserUpdate.Click += new EventHandler(btnUserUpdate_Click);				//用户刷新 按钮点击事件
 			btnAllUserUpdate.Click += new EventHandler(btnAllUserUpdate_Click);			//全部刷新 按钮点击事件
-			btnStopAlarm.Click += new EventHandler(btnStopAlarm_Click);					//停止报警 按钮点击事件
+            btnResetEvacuate.Click += new EventHandler(btnResetEvacuate_Click);			//全部刷新 按钮点击事件
+
+            btnStopAlarm.Click += new EventHandler(btnStopAlarm_Click);					//停止报警 按钮点击事件
 			btnSysSetting.Click += new EventHandler(btnSysSetting_Click);				//系统设置 按钮点击事件
 			btnUpLoad.Click += new EventHandler(btnUpLoad_Click);						//实时上传 按钮点击事件
 			btnKnowledgeBase.Click += new EventHandler(btnKnowledgeBase_Click);			//知识库 按钮点击事件
@@ -331,19 +344,20 @@ namespace SCBAControlHost
 
 			#region 串口通信配置
 			serialCom.worklog = this.worklog;
-			//串口通信配置
-			//string comName = AppUtil.FindComByKeyStr(ComKeyStr);		//查找包含关键字的COM号
-			if (SysConfig.Setting.serialCom != null)
+            labelChannel.Text = "信道：" + SysConfig.Setting.channal.ToString("D2");
+            //串口通信配置
+            //string comName = AppUtil.FindComByKeyStr(ComKeyStr);		//查找包含关键字的COM号
+            if (SysConfig.Setting.serialCom != null)
 			{
 				if (serialCom.ComOpen(SysConfig.Setting.serialCom, SerialBaudLUT[SysConfig.Setting.serialBaud]))//若打开串口成功
 				{
 					//写入串口连接记录到日志文件中
 					worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.Connect, null));
-					serialCom.SendQueue_Enqueue(ProtocolCommand.SwitchChannelMsg(20));	//切换信道
+					serialCom.SendQueue_Enqueue(ProtocolCommand.SwitchChannelMsg((byte)(SysConfig.Setting.channal)));	//切换信道
 					Thread.Sleep(2000);
-					//发送主机查询命令
-					SerialSendMsg sendMsg = ProtocolCommand.ServerQueryCmdMsg(SysConfig.getSerialNOBytes());
-					serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
+					////发送主机查询命令
+					//SerialSendMsg sendMsg = ProtocolCommand.ServerQueryCmdMsg(SysConfig.getSerialNOBytes());
+					//serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
 				}
 			}
 			else
@@ -682,7 +696,8 @@ namespace SCBAControlHost
 				richTextSysSetPwd.Text = SysConfig.Setting.accessPassword;
 				comboBoxSysSetThres.SelectedIndex = SysConfig.Setting.alarmThreshold;
 				richTextSysSetGrpNO.Text = SysConfig.Setting.groupNumber.ToString("D8");
-				richTextSysSetSysPwd.Text = SysConfig.Setting.systemPassword;
+                richTextSysSetChannal.Text = SysConfig.Setting.channal.ToString("D8");
+                richTextSysSetSysPwd.Text = SysConfig.Setting.systemPassword;
 
 				PanelSwitch(CurPanel.EpanelSysSetting);
 				enterPwdForm.FormVisible = false;
@@ -1309,12 +1324,46 @@ namespace SCBAControlHost
 				}
 			}
 		}
-		#endregion
+
+        //用户撤出复位按钮点击事件
+        void btnResetEvacuate_Click(object sender, EventArgs e)
+        {
+            if (!isPlayBackMode)    //若不是回放模式
+            {
+                if (!isAllUserEvacuating)   //若没有正在执行全部撤出操作
+                {
+
+                        byte[] serialNO = null;
+                        //遍历用户找出当前被选中的, 且不处于"关机"或"撤出中"的终端
+                        foreach (User user in users)
+                        {
+                            //if (user.IsSelected && (user.UStatus != USERSTATUS.PowerOffStatus) && (user.UStatus != USERSTATUS.RetreatingStatus))
+                            if (user.IsSelected && (user.UStatus == USERSTATUS.RetreatingStatus|| user.UStatus == USERSTATUS.RetreatFailStatus))
+                            {//若找到终端, 则修改状态
+                            if (user.TerminalInfo.Pressure > 10)             //安全状态
+                                user.UStatus = USERSTATUS.SafeStatus;
+                            else if (user.TerminalInfo.Pressure > 6)         //轻度危险
+                                user.UStatus = USERSTATUS.MildDangerousStatus;
+                            else
+                                user.UStatus = USERSTATUS.DangerousStatus;
 
 
-		#region 键盘事件处理函数
-		//键盘事件处理函数-普通按键
-		void FormMain_KeyDown(object sender, KeyEventArgs e)
+                            serialNO = AppUtil.IntSerialToBytes(user.BasicInfo.terminalGrpNO, user.BasicInfo.terminalNO);
+                            worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.MainPanel, (int)BtnOfMainPanel.ResetEvacuate, BitConverter.ToString(serialNO, 0).Replace("-", string.Empty)));
+                        }
+                        }
+                        
+         
+              
+                }
+            }
+        }
+        #endregion
+
+
+        #region 键盘事件处理函数
+        //键盘事件处理函数-普通按键
+        void FormMain_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (!isPlayBackMode)	//若不是回放模式
 			{
@@ -1360,7 +1409,12 @@ namespace SCBAControlHost
 						detailsForm.FormVisible = false;
 						this.Focus();
 						break;
-					case Keys.Escape:	//Esc按键, 停止报警
+                    case Keys.F12:       //F12按键, 撤出恢复
+                        btnResetEvacuate.PerformClick();
+                        break;
+                     
+
+                    case Keys.Escape:	//Esc按键, 停止报警
 						btnStopAlarm.PerformClick();
 						break;
 
@@ -1535,7 +1589,7 @@ namespace SCBAControlHost
 								{
 									//写入串口连接记录到日志文件中
 									worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.Connect, null));
-									if (ServerRole == 0)			//若还没有确定角色
+									if (false)			//若还没有确定角色ServerRole ==
 									{
 										SerialSendMsg sendMsg = ProtocolCommand.ServerQueryCmdMsg(SysConfig.getSerialNOBytes());	//发送主机查询命令
 										serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
@@ -1595,8 +1649,23 @@ namespace SCBAControlHost
 			worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.MainPanel, (int)BtnOfMainPanel.ProgramExit, null));
 			System.Environment.Exit(0); //退出程序
 		}
-		#endregion
-	}
+        #endregion
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labelSysSetGrpNO_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
 
 }
 

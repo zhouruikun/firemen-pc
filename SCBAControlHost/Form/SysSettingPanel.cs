@@ -159,8 +159,8 @@ namespace SCBAControlHost
 					SysConfig.SaveSystemSetting(SysConfig.Setting);
 					if (serialCom.ComOpen(SysConfig.Setting.serialCom, SerialBaudLUT[SysConfig.Setting.serialBaud]))		//若打开串口成功
 					{
-						SerialSendMsg sendMsg = ProtocolCommand.ServerQueryCmdMsg(SysConfig.getSerialNOBytes());	//发送主机查询命令
-						serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
+						//SerialSendMsg sendMsg = ProtocolCommand.ServerQueryCmdMsg(SysConfig.getSerialNOBytes());	//发送主机查询命令
+						//serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
 					}
 					else
 						MessageBox.Show("打开串口失败!");
@@ -216,8 +216,8 @@ namespace SCBAControlHost
 					{
 						if (serialCom.ComOpen(SysConfig.Setting.serialCom, SerialBaudLUT[SysConfig.Setting.serialBaud]))		//若打开串口成功
 						{
-							SerialSendMsg sendMsg = ProtocolCommand.ServerQueryCmdMsg(SysConfig.getSerialNOBytes());	//发送主机查询命令
-							serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
+							//SerialSendMsg sendMsg = ProtocolCommand.ServerQueryCmdMsg(SysConfig.getSerialNOBytes());	//发送主机查询命令
+							//serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
 						}
 						else
 							MessageBox.Show("打开串口失败!");
@@ -370,10 +370,46 @@ namespace SCBAControlHost
 					else MessageBox.Show("请输入小于16777215的组号");
 				}
 				else MessageBox.Show("请输入正确的组号格式");
-			}
+                //验证信道格式是否正确(即是否是小于30的纯数字)
+                if (RegexUtil.RegexCheckNumber(richTextSysSetChannal.Text))
+                {
+                    int Channal = int.Parse(richTextSysSetChannal.Text);
+                    if ((Channal > 0) && (Channal < 30) && (Channal < 23 || Channal > 25))
+                    {
+                        richTextSysSetChannal.Text = Channal.ToString("D8");
+                        richTextSysSetChannal.Enabled = false;
+                        SysConfig.Setting.channal = Channal;
+                        labelChannel.Text = "信道：" + SysConfig.Setting.channal.ToString("D2");
+                        SysConfig.SaveSystemSetting(SysConfig.Setting);
+                        //写入组号修改记录
+                        //worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.SysSettingPanel, (int)BtnOfSysSettingPanel.ChangeGrpNO, richTextSysSetGrpNO.Text));
+                        isSerialShouldOpen = true;
+                        //串口通信配置
+                        //string comName = AppUtil.FindComByKeyStr(ComKeyStr);		//查找包含关键字的COM号
+                        if (SysConfig.Setting.serialCom != null)
+                        {
+                            if (serialCom.ComOpen(SysConfig.Setting.serialCom, SerialBaudLUT[SysConfig.Setting.serialBaud]))//若打开串口成功
+                            {
+                                //写入串口连接记录到日志文件中
+                                worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.Connect, null));
+                                serialCom.SendQueue_Enqueue(ProtocolCommand.SwitchChannelMsg((byte)(SysConfig.Setting.channal)));  //切换信道
+                            }
+                        }
+                        else
+                            MessageBox.Show("打开串口失败!");
+
+
+
+                    }
+                    else MessageBox.Show("请输入小于30的信道号 并且不为 23 24 25");
+                }
+                else MessageBox.Show("请输入正确的组号格式");
+            }
 		}
 		void btnSysSetGrpNOChange_Click(object sender, EventArgs e)
-		{ richTextSysSetGrpNO.Enabled = true; }
+		{ richTextSysSetGrpNO.Enabled = true;
+            richTextSysSetChannal.Enabled = true;
+        }
 
 		//修改系统密码
 		void btnSysSetSysPwdOK_Click(object sender, EventArgs e)

@@ -34,8 +34,9 @@ namespace SCBAControlHost
 		RTUpload = 9,			//实时上传
 		NetLink = 10,			//网络连接
 		UserSelect = 11,		//选中用户
-		ProgramExit = 12		//退出程序
-	};
+		ProgramExit = 12,		//退出程序
+        ResetEvacuate = 13       //用户撤出
+    };
 
 	public enum BtnOfSysSettingPanel : int　　//系统设置面板按钮的编号
 	{

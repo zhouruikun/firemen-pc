@@ -22,8 +22,9 @@ namespace SCBAControlHost.SysConfig
 		public String accessAccount;	//服务器访问账号
 		public String accessPassword;	//服务器访问密码
 		public int alarmThreshold;		//报警点		0--50%  1--10MPa  2--6MPa
-		public int groupNumber;		//组号
-		public String systemPassword = "888888";	//系统密码
+		public int groupNumber;     //组号
+        public int channal;     //组号
+        public String systemPassword = "888888";	//系统密码
 		public Dictionary<byte, int> channelDic = new Dictionary<byte, int>();	//信道字典key为byte型的信道号, value为int型的组号(不包含终端号)
 		public int ChannelIndex = 0;
 	}
@@ -61,7 +62,8 @@ namespace SCBAControlHost.SysConfig
 			setting.accessPassword = "123456";
 			setting.alarmThreshold = 0;
 			setting.groupNumber = 3;
-			setting.systemPassword = "888888";
+            setting.channal = 20;
+            setting.systemPassword = "888888";
 		}
 
 		//读取系统配置
@@ -128,7 +130,9 @@ namespace SCBAControlHost.SysConfig
 			setting.accessPassword = "123456";
 			setting.alarmThreshold = 0;
 			setting.groupNumber = 3;
-			setting.systemPassword = "888888";
+            setting.channal = 20;
+
+            setting.systemPassword = "888888";
 
 			//创建信道列表
 			for (int i = 0; i < 15; i++ )
