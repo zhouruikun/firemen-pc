@@ -687,10 +687,10 @@ namespace SCBAControlHost
 				{
 					if (SerialNoDic[serialNO] == false)
 					{
-						SerialSendMsg sendMsg = ProtocolCommand.RemotePlaySoundCmdMsg(0x09, serialNO, 1, 1000);	//终端撤出命令, 发送1次, 最大等待时间为600ms
+						SerialSendMsg sendMsg = ProtocolCommand.RemotePlaySoundCmdMsg(0x09, serialNO, 1, 3000);	//终端撤出命令, 发送1次, 最大等待时间为1000ms
 						serialCom.SendQueue_Enqueue(sendMsg);	// 发送出去
 						DateTime SendTime = DateTime.Now;
-						while (((int)((DateTime.Now - SendTime).TotalMilliseconds) < 850) && !SerialNoDic[serialNO])		//若还没到450ms且还没接到响应, 则一直接收响应
+						while (((int)((DateTime.Now - SendTime).TotalMilliseconds) < 2850) && !SerialNoDic[serialNO])		//若还没到850ms且还没接到响应, 则一直接收响应
 						{
 							if (AllUserEvacuateQueue.Count > 0)	// 若队列中有消息, 则取出消息, 并判断终端序列号是否匹配
 							{
