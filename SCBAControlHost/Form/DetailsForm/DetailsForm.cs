@@ -107,8 +107,15 @@ namespace SCBAControlHost
 				labelDetailsFormTerminalCapSpec.Text = "气瓶容量:  " + CurUser.BasicInfo.terminalCapSpec + "L";
 				labelDetailsFormTerminalPressure.Text = "当前气压:  " + CurUser.TerminalInfo.Pressure.ToString("F1") + "MPa";
 				labelDetailsFormTerminalVolt.Text = "设备电压:  " + CurUser.TerminalInfo.Voltage.ToString("F2") + "V";
-				labelDetailsFormTerminalTemperature.Text = "环境温度:  " + CurUser.TerminalInfo.Temperature + "℃";
-				labelDetailsFormTerminalRemainTim.Text = "剩余时间:  " + CurUser.TerminalInfo.RemainTime + "分钟";
+                if(CurUser.TerminalInfo.Temperature>0x80)
+                {
+                    labelDetailsFormTerminalTemperature.Text = "环境温度:  -" + (CurUser.TerminalInfo.Temperature&0x7f) + "℃";
+
+                }
+                else
+                    labelDetailsFormTerminalTemperature.Text = "环境温度:  " + CurUser.TerminalInfo.Temperature + "℃";
+
+                labelDetailsFormTerminalRemainTim.Text = "剩余时间:  " + CurUser.TerminalInfo.RemainTime + "分钟";
 				labelDetailsFormBTMac.Text = "蓝牙MAC:  " + CurUser.BasicInfo.BlueToothMac;
 				labelDetailsFormSNNo.Text = "无线SN号:  " + CurUser.BasicInfo.WirelessSN;
 

@@ -60,15 +60,11 @@ namespace SCBAControlHost.MyUtils
 				//http请求体
 				if (request.Method == "POST")
 				{
-					request.ContentLength = postBytes.Length;
-					//发送数据  using结束代码段释放
-					using (Stream requestStm = request.GetRequestStream())
-					{
-						requestStm.Write(postBytes, 0, postBytes.Length);
-					}
+                    request.ContentLength = postBytes.Length;
+                    //发送数据  using结束代码段释放
+                    request.GetRequestStream().Write(postBytes, 0, postBytes.Length);//这里用了300ms 并且直接发送了
+			 
 				}
-         
-
 				//响应
 				response = (HttpWebResponse)request.GetResponse();
 

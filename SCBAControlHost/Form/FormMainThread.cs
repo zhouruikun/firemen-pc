@@ -661,102 +661,191 @@ namespace SCBAControlHost
 			isAllUserUpdating = false;
 		}
 
-		// 全部撤出线程
-		public void AllUserEvacuate_Thread()
-		{
-			Dictionary<byte[], bool> SerialNoDic = new Dictionary<byte[], bool>();
-			Dictionary<byte[], SerialRecvMsg> TerminalMsg = new Dictionary<byte[], SerialRecvMsg>();
-			List<byte[]> SerialNoKey = new List<byte[]>();
+        // 全部撤出线程
+        public void AllUserEvacuate_Thread()
+        {
+            Dictionary<byte[], bool> SerialNoDic = new Dictionary<byte[], bool>();
+            List<byte[]> SerialNoKey = new List<byte[]>();
 
-			// 1. 首先找到当前不处于"关机"状态的终端, 并将它们存放到列表中
-			foreach (User user in users)
-			{
-				//if ((user.UStatus != USERSTATUS.PowerOffStatus) && (user.UStatus != USERSTATUS.RetreatingStatus))	//若用户状态不为"关机"和"撤出中"状态
-				if ((user.UStatus != USERSTATUS.PowerOffStatus))	// 若用户状态不为"关机"
-				{
-					SerialNoDic.Add(AppUtil.IntSerialToBytes(user.BasicInfo.terminalGrpNO, user.BasicInfo.terminalNO), false);
-				}
-			}
-			SerialNoKey.AddRange(SerialNoDic.Keys);
+            // 1. 首先找到当前不处于"关机"状态的终端, 并将它们存放到列表中
+            foreach (User user in users)
+            {
+                //if ((user.UStatus != USERSTATUS.PowerOffStatus) && (user.UStatus != USERSTATUS.RetreatingStatus))	//若用户状态不为"关机"和"撤出中"状态
+                if ((user.UStatus != USERSTATUS.PowerOffStatus))    // 若用户状态不为"关机"
+                {
+                    SerialNoDic.Add(AppUtil.IntSerialToBytes(user.BasicInfo.terminalGrpNO, user.BasicInfo.terminalNO), false);
+                }
+            }
+            SerialNoKey.AddRange(SerialNoDic.Keys);
 
-			// 2. 开始一次对它们发送远程播报5命令(0x09)
-			// 重发两次
-			for (int i = 0; i < 2; i++)
-			{
-				foreach (byte[] serialNO in SerialNoKey)
-				{
-					if (SerialNoDic[serialNO] == false)
-					{
-						SerialSendMsg sendMsg = ProtocolCommand.RemotePlaySoundCmdMsg(0x09, serialNO, 1, 3000);	//终端撤出命令, 发送1次, 最大等待时间为1000ms
-						serialCom.SendQueue_Enqueue(sendMsg);	// 发送出去
-						DateTime SendTime = DateTime.Now;
-						while (((int)((DateTime.Now - SendTime).TotalMilliseconds) < 2850) && !SerialNoDic[serialNO])		//若还没到850ms且还没接到响应, 则一直接收响应
-						{
-							if (AllUserEvacuateQueue.Count > 0)	// 若队列中有消息, 则取出消息, 并判断终端序列号是否匹配
-							{
-								SerialRecvMsg recvMsg = new SerialRecvMsg();
-								lock (AllUserEvacuateQueue) { recvMsg = AllUserEvacuateQueue.Dequeue(); }	//取出消息
-								if (AppUtil.IsBytesEqual(serialNO, 0, recvMsg.PacketData.DataFiled, 1, 4))	//若序列号匹配, 则记录该终端完成
-								{
-									if (recvMsg.IsFromExtern)	// 若是正确的响应, 则将标志位置true, 同时将消息推入队列
-									{
-										SerialNoDic[serialNO] = true;
-										if (!TerminalMsg.ContainsKey(serialNO))
-											TerminalMsg.Add(serialNO, recvMsg);	// 将接收到的消息加入队列中, 方便第3步的处理
-										//写入串口接收记录到日志文件中
-										worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialRecv, recvMsg));
-										break;
-									}
-									else						// 若是超时响应, 则判断是否是第二次发送命令了
-									{
-										if (i > 0)	// 若是第二次发送了, 则将超时消息推入队列
-										{
-											if (!TerminalMsg.ContainsKey(serialNO))
-												TerminalMsg.Add(serialNO, recvMsg);
-										}
-										// 写入串口接收记录到日志文件中
-										worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialTimeOut, recvMsg));
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+            // 2. 开始一次对它们发送远程播报5命令(0x09)
+            // 重发两次
+            foreach (byte[] serialNO in SerialNoKey)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    if (SerialNoDic[serialNO] == false)
+                    {
+                        SerialSendMsg sendMsg = ProtocolCommand.RemotePlaySoundCmdMsg(0x09, serialNO, 1, 3000); //终端撤出命令, 发送1次, 最大等待时间为3000ms
+                        serialCom.SendQueue_Enqueue(sendMsg);   // 发送出去
+                        DateTime SendTime = DateTime.Now;
+                        while (true)
+                        {
+                            if (AllUserEvacuateQueue.Count > 0) // 若队列中有消息, 则取出消息, 并判断终端序列号是否匹配
+                            {
+                                SerialRecvMsg recvMsg = new SerialRecvMsg();
+                                lock (AllUserEvacuateQueue) { recvMsg = AllUserEvacuateQueue.Dequeue(); }   //取出消息
+                                if (AppUtil.IsBytesEqual(serialNO, 0, recvMsg.PacketData.DataFiled, 1, 4))  //若序列号匹配, 则记录该终端完成
+                                {
+                                    UserStatusPara st = new UserStatusPara();
+                                    st.teriminalNO = recvMsg.PacketData.DataFiled[4];
+                                    if (recvMsg.IsFromExtern)   // 若是正确的响应, 则将标志位置true, 同时将消息推入队列
+                                    {
+                                        st.status = USERSTATUS.RetreatingStatus;
+                                        lock (m_SyncContext) { m_SyncContext.Send(ChangeUserState, st); }           //改变用户状态
+                                        SerialNoDic[serialNO] = true;
+                                        //写入串口接收记录到日志文件中
+                                        worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialRecv, recvMsg));
+                                    }
+                                    else                        // 若是超时响应, 则判断是否是第二次发送命令了
+                                    {
+                                        if (i > 1)  // 若是第三次发送了, 则将超时消息推入队列
+                                        {
+                                            st.status = USERSTATUS.RetreatFailStatus;
+                                            lock (m_SyncContext) { m_SyncContext.Send(ChangeUserState, st); }           //改变用户状态
+                                        }
+                                        // 写入串口接收记录到日志文件中
+                                        worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialTimeOut, recvMsg));
+                                    }
+                                    break;
+                                }
+                            }
+                            Thread.Sleep(10);
+                        }
+                    }
+                }
+            }
 
-			//3. 统一更新用户状态操作
-			foreach (byte[] serialNO in SerialNoKey)
-			{
-				if (MatchSerialNO(serialNO, 0))	// 若序列号匹配
-				{
-					try
-					{
-						UserStatusPara st = new UserStatusPara();
-						st.teriminalNO = TerminalMsg[serialNO].PacketData.DataFiled[4];
-						if (TerminalMsg[serialNO].IsFromExtern)	// 若是从外部发来的, 则将用户状态改为"撤出中"
-						{
-							st.status = USERSTATUS.RetreatingStatus;
-						}
-						else						// 若是内部消息, 表示超时, 则将用户状态改为"撤出失败"
-						{
-							st.status = USERSTATUS.RetreatFailStatus;
-						}
-						lock (m_SyncContext) { m_SyncContext.Send(ChangeUserState, st); }			//改变用户状态
-					}
-					catch (Exception ex)
-					{
-						Console.WriteLine(ex.Message);
-						log.Info(AppUtil.getExceptionInfo(ex));
-					}
-				}
-			}
-			isAllUserEvacuating = false;
-		}
-		#endregion
+            isAllUserEvacuating = false;
+        }
 
-		#region 网络相关线程
-		// 处理网络接收数据包的线程
-		public void NetPacketHandler()
+        //public void AllUserEvacuate_Thread()
+        //{
+        //	Dictionary<byte[], bool> SerialNoDic = new Dictionary<byte[], bool>();
+        //	Dictionary<byte[], SerialRecvMsg> TerminalMsg = new Dictionary<byte[], SerialRecvMsg>();
+        //	List<byte[]> SerialNoKey = new List<byte[]>();
+
+        //	// 1. 首先找到当前不处于"关机"状态的终端, 并将它们存放到列表中
+        //	foreach (User user in users)
+        //	{
+        //		//if ((user.UStatus != USERSTATUS.PowerOffStatus) && (user.UStatus != USERSTATUS.RetreatingStatus))	//若用户状态不为"关机"和"撤出中"状态
+        //		if ((user.UStatus != USERSTATUS.PowerOffStatus))	// 若用户状态不为"关机"
+        //		{
+        //			SerialNoDic.Add(AppUtil.IntSerialToBytes(user.BasicInfo.terminalGrpNO, user.BasicInfo.terminalNO), false);
+        //		}
+        //	}
+        //	SerialNoKey.AddRange(SerialNoDic.Keys);
+
+        //	// 2. 开始一次对它们发送远程播报5命令(0x09)
+        //	// 重发两次
+        //	for (int i = 0; i < 2; i++)
+        //	{
+        //		foreach (byte[] serialNO in SerialNoKey)
+        //		{
+        //			if (SerialNoDic[serialNO] == false)
+        //			{
+        //				SerialSendMsg sendMsg = ProtocolCommand.RemotePlaySoundCmdMsg(0x09, serialNO, 1, 3000);	//终端撤出命令, 发送1次, 最大等待时间为1000ms
+        //				serialCom.SendQueue_Enqueue(sendMsg);	// 发送出去
+        //				DateTime SendTime = DateTime.Now;
+        //				while (((int)((DateTime.Now - SendTime).TotalMilliseconds) < 3100) && !SerialNoDic[serialNO])		//若还没到850ms且还没接到响应, 则一直接收响应
+        //				{
+        //                          Thread.Sleep(10);
+        //                          if (AllUserEvacuateQueue.Count > 0)	// 若队列中有消息, 则取出消息, 并判断终端序列号是否匹配
+        //					{
+        //						SerialRecvMsg recvMsg = new SerialRecvMsg();
+        //						lock (AllUserEvacuateQueue) { recvMsg = AllUserEvacuateQueue.Dequeue(); }	//取出消息
+        //						if (AppUtil.IsBytesEqual(serialNO, 0, recvMsg.PacketData.DataFiled, 1, 4))	//若序列号匹配, 则记录该终端完成
+        //						{
+
+        //                                  if (recvMsg.IsFromExtern)	// 若是正确的响应, 则将标志位置true, 同时将消息推入队列
+        //							{
+        //								SerialNoDic[serialNO] = true;
+        //								if (!TerminalMsg.ContainsKey(serialNO))
+        //									TerminalMsg.Add(serialNO, recvMsg);	// 将接收到的消息加入队列中, 方便第3步的处理
+        //								//写入串口接收记录到日志文件中
+        //								worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialRecv, recvMsg));
+        //								break;
+        //							}
+        //							else						// 若是超时响应, 则判断是否是第二次发送命令了
+        //							{
+        //								if (i > 0)	// 若是第二次发送了, 则将超时消息推入队列
+        //								{
+        //									if (!TerminalMsg.ContainsKey(serialNO))
+        //										TerminalMsg.Add(serialNO, recvMsg);
+        //								}
+        //								// 写入串口接收记录到日志文件中
+        //								worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.SerialTimeOut, recvMsg));
+        //							}
+        //                                  //逐个更新状态
+        //                                  try
+        //                                  {
+        //                                      UserStatusPara st = new UserStatusPara();
+        //                                      st.teriminalNO = TerminalMsg[serialNO].PacketData.DataFiled[4];
+        //                                      if (TerminalMsg[serialNO].IsFromExtern) // 若是从外部发来的, 则将用户状态改为"撤出中"
+        //                                      {
+        //                                          st.status = USERSTATUS.RetreatingStatus;
+        //                                      }
+        //                                      else                        // 若是内部消息, 表示超时, 则将用户状态改为"撤出失败"
+        //                                      {
+        //                                          st.status = USERSTATUS.RetreatFailStatus;
+        //                                      }
+        //                                      lock (m_SyncContext) { m_SyncContext.Send(ChangeUserState, st); }           //改变用户状态
+        //                                  }
+        //                                  catch (Exception ex)
+        //                                  {
+        //                                      Console.WriteLine(ex.Message);
+        //                                      log.Info(AppUtil.getExceptionInfo(ex));
+        //                                  }
+        //                              }
+        //					}
+        //				}
+        //			}
+        //		}
+        //	}
+
+        //	//3. 统一更新用户状态操作
+        //	foreach (byte[] serialNO in SerialNoKey)
+        //	{
+        //		if (MatchSerialNO(serialNO, 0))	// 若序列号匹配
+        //		{
+        //                  try//逐个更新状态
+        //                  {
+        //                      UserStatusPara st = new UserStatusPara();
+        //                      st.teriminalNO = TerminalMsg[serialNO].PacketData.DataFiled[4];
+        //                      if (TerminalMsg[serialNO].IsFromExtern) // 若是从外部发来的, 则将用户状态改为"撤出中"
+        //                      {
+        //                          st.status = USERSTATUS.RetreatingStatus;
+        //                      }
+        //                      else                        // 若是内部消息, 表示超时, 则将用户状态改为"撤出失败"
+        //                      {
+        //                          st.status = USERSTATUS.RetreatFailStatus;
+        //                      }
+        //                      lock (m_SyncContext) { m_SyncContext.Send(ChangeUserState, st); }           //改变用户状态
+        //                  }
+        //                  catch (Exception ex)
+        //                  {
+        //                      Console.WriteLine(ex.Message);
+        //                      log.Info(AppUtil.getExceptionInfo(ex));
+        //                  }
+        //              }
+        //	}
+        //	isAllUserEvacuating = false;
+        //}
+        #endregion
+
+        #region 网络相关线程
+        // 处理网络接收数据包的线程
+        public void NetPacketHandler()
 		{
 			NetPacket recvPacket;
 			int RecvQueueItemCount = 0;

@@ -355,14 +355,19 @@ namespace SCBAControlHost
 					worklog.LogQueue_Enqueue(LogCommand.getSerialRecord(SerialRecordType.Connect, null));
 					serialCom.SendQueue_Enqueue(ProtocolCommand.SwitchChannelMsg((byte)(SysConfig.Setting.channal)));	//切换信道
 					Thread.Sleep(2000);
-					////发送主机查询命令
-					//SerialSendMsg sendMsg = ProtocolCommand.ServerQueryCmdMsg(SysConfig.getSerialNOBytes());
-					//serialCom.SendQueue_Enqueue(sendMsg);	//发送出去
-				}
-			}
+                    ////发送主机查询命令
+                    //serialsendmsg sendmsg = protocolcommand.serverquerycmdmsg(sysconfig.getserialnobytes());
+                    //serialcom.sendqueue_enqueue(sendmsg);	//发送出去
+                }
+                else
+                { MessageBox.Show("打开串口失败!"); }
+               
+            }
 			else
 				MessageBox.Show("打开串口失败!");
-			recvMsgThread = new Thread(RecvMsgThread);		//开启接收消息的线程
+            //获取UI线程同步上下文
+            m_SyncContext = SynchronizationContext.Current;
+            recvMsgThread = new Thread(RecvMsgThread);		//开启接收消息的线程
 			recvMsgThread.Name = "主界面处理串口数据线程";
 			recvMsgThread.IsBackground = true;
 			recvMsgThread.Start();
@@ -448,8 +453,7 @@ namespace SCBAControlHost
 			logMaintain.DeleteExpiredLogFiles();		//删除过期的系统日志
 			WorkLogMaintain();							//删除过期的工作日志
 
-			//获取UI线程同步上下文
-			m_SyncContext = SynchronizationContext.Current;
+
 
 
 			//详情窗口初始化
@@ -476,12 +480,9 @@ namespace SCBAControlHost
 			enterPwdForm.Size = new Size((int)((float)sizeEnterPwd.Width / (float)sizeThis.Width * this.Width), (int)((float)sizeEnterPwd.Height / (float)sizeThis.Height * this.Height));
 			enterPwdForm.Show();
 			enterPwdForm.FormVisible = false;
-
 			enterPwdForm.btnEnterPwdFormOK.Click += new EventHandler(btnEnterPwdFormOK_Click);
-
 			isFormLoadDone = true;		//窗口加载完毕标志
 		}
-
 		// 窗口完全加载完毕的事件
 		void FormMain_Shown(object sender, EventArgs e)
 		{
@@ -637,7 +638,6 @@ namespace SCBAControlHost
 //            enterPwdForm.FormVisible = false;
 
 //            enterPwdForm.btnEnterPwdFormOK.Click += new EventHandler(btnEnterPwdFormOK_Click);
-
 //            isFormLoadDone = true;		//窗口加载完毕标志
 		}
 

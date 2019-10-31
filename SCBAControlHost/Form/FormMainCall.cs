@@ -440,8 +440,8 @@ namespace SCBAControlHost
 						users[index].TerminalInfo.Pressure = User.GetPressDoubleByBytes(array1, 5);
 						//电压, 单位为V
 						users[index].TerminalInfo.Voltage = User.GetVoltageDoubleByBytes(array1, 7);
-						//温度
-						users[index].TerminalInfo.Temperature = User.GetTemeratureIntByByte(array1[9]);
+                        //温度
+                        users[index].TerminalInfo.Temperature = array1[9];// User.GetTemeratureIntByByte(array1[9]);
 						//开机时间
 						users[index].TerminalInfo.PowerONTime = User.GetTimeIntByBytes(array1, 10);
 						//状态

@@ -401,7 +401,7 @@ namespace SCBAControlHost.SerialCommunication
 			SerialSendMsg sendMsg = null;
 			if (serialSendQueue.Count > 0)
 			{
-				lock (this.serialSendQueue) { sendMsg = serialSendQueue.Dequeue(); }
+				lock (serialSendQueue) { sendMsg = serialSendQueue.Dequeue(); }
 			}
 			return sendMsg;
 		}

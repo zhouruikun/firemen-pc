@@ -43,7 +43,7 @@ namespace SCBAControlHost
 	{
 		public double Pressure;				//终端当前气压
 		public double Voltage;				//终端当前电压
-		public int Temperature;				//终端当前温度
+		public byte Temperature;				//终端当前温度
 		public int PowerONTime;				//终端开机时间
 		public byte TerminalStatus;			//终端状态
 		public int RemainTime;				//终端当前剩余时间
