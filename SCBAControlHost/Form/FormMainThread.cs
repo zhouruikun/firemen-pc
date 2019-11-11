@@ -916,7 +916,7 @@ namespace SCBAControlHost
 				if (isFormLoadDone)
 				{
                     // 先ping一下主机, 看主机是否在线
-                    string ip = SysConfig.Setting.serverIP.Split(':')[0];
+                    string ip = SysConfig.Setting.serverIP.Split('/')[0];
                     bool pingResult = AppUtil.PingServerAlive(ip, 1000);
 
 					if (pingResult)		// 若主机在线

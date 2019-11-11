@@ -180,7 +180,7 @@ namespace SCBAControlHost.MyUtils
 						response = Request(PageURI, header, Encoding.UTF8.GetBytes(postString), "HTTP");
 						if ((int)response.StatusCode < 400)
 						{
-							if (response.ResponseUri.AbsolutePath == "/home")		//如果响应是由home页面发来的, 则代表登录成功
+							if (response.ResponseUri.AbsolutePath.Contains("/home"))		//如果响应是由home页面发来的, 则代表登录成功
 								res = 2;
 							else
 								res = 1;
@@ -205,15 +205,17 @@ namespace SCBAControlHost.MyUtils
             {
                 //1. 获取登录页面
                 NameValueCollection header = new NameValueCollection();
-                header["Method"] = "POST";
+                header["Method"] = "GET";
                 byte[] tempBytes = Encoding.UTF8.GetBytes(data);
                 response = Request(PageURI, header, tempBytes, "HTTP");
+
                 if (response != null)
                 {
+                    Console.WriteLine(response.GetResponseStream());
                     if ((int)response.StatusCode < 400)
                     {
 
-                        if (response.ResponseUri.AbsolutePath == "/login")       //如果响应是由Login页面发来的, 则重新登陆
+                        if (response.ResponseUri.AbsolutePath.Contains("/login"))       //如果响应是由Login页面发来的, 则重新登陆
                             res = 1;
                         else
                         {

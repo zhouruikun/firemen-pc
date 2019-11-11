@@ -310,7 +310,7 @@ namespace SCBAControlHost.NetCommunication
                 {
                     //设置各个访问页面
                     string LoginURL = "http://" + SysConfig.Setting.serverIP + "/login";
-                    string UploadURL = "http://" + SysConfig.Setting.serverIP + "/uploadData";
+                    string UploadURL = "http://" + SysConfig.Setting.serverIP + "/event/uploadData";
                    
                     //http 发送
                     if (HttpHelper.UploadData(UploadURL, BitConverter.ToString(sendBuf)) == 1)//返回1 重新登陆
