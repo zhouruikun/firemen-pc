@@ -89,6 +89,8 @@ namespace SCBAControlHost.NetCommunication
 		}
 
 		//用户信息上传包--多个用户
+
+            //协议错误  少了剩余时间  20191118 修改
 		public static NetPacket NetUploadUsersPacket(List<User> users)
 		{
 			NetPacket np = new NetPacket();
@@ -103,9 +105,9 @@ namespace SCBAControlHost.NetCommunication
 			{
 				int userNO;
 				if (int.TryParse(user.BasicInfo.userNO, out userNO))
-					np.datafield[16 * i] = (byte)userNO;
+					np.datafield[18 * i] = (byte)userNO;
 				else
-					np.datafield[16 * i] = 1;
+					np.datafield[18 * i] = 1;
 				Array.Copy(AppUtil.IntSerialToBytes(user.BasicInfo.terminalGrpNO, user.BasicInfo.terminalNO), 0, np.datafield, 18 * i + 1, 4);	//填充序列号
 				Array.Copy(User.GetPressBytesByDouble(user.TerminalInfo.Pressure), 0, np.datafield, 18 * i + 5, 2);		//气压值
 				Array.Copy(User.GetVoltageBytesByDouble(user.TerminalInfo.Voltage), 0, np.datafield, 18 * i + 7, 2);	//电压值
@@ -135,7 +137,6 @@ namespace SCBAControlHost.NetCommunication
 			np.DataLength_LowByte = (byte)(np.DataLength & 0x00FF);
 			np.datafield = new byte[np.DataLength];
 			Array.Copy(tmpBytes, np.datafield, tmpBytes.Length);
-
 			return np;
 		}
 

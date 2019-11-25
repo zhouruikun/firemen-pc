@@ -196,16 +196,16 @@ namespace SCBAControlHost.NetCommunication
 				{
 					for (int i = 0; i < SendQueueItemCount; i++)
 					{
-						lock (netSendQueue) { sendPacket = netSendQueue.Dequeue(); }	//取出数据包
-						//if (client != null)
-						//{
-						//	DataPackSend(sendPacket);		//发送出去
-						//}
-                        if(isNeedHttpUpload)
+						lock (netSendQueue) { sendPacket = netSendQueue.Dequeue(); }    //取出数据包
+                        if (client != null)
                         {
-                            DataPackSendViaHttp(sendPacket);		//发送出去
+                            DataPackSend(sendPacket);       //发送出去
                         }
-                      
+                        //if(isNeedHttpUpload)
+                        //{
+                        //    DataPackSendViaHttp(sendPacket);		//发送出去
+                        //}
+
                     }
 				}
 

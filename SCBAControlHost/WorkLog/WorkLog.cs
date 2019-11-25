@@ -33,8 +33,8 @@ namespace SCBAControlHost
 
 			DirLevelOne = ".\\res\\WorkLog\\" + DateTime.Now.ToString("yyyy-MM");				//一级目录-年-月
 			DirLevelTwo = DirLevelOne + "\\" + DateTime.Now.ToString("MM-dd");					//二级目录-月-日
-			//filePath = DirLevelTwo + "\\" + UserName + "+" + TaskAddress + "+" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".csv";		//文件--年月日-时分秒
-			filePath = DirLevelTwo + "\\" + UserName + "+" + "A" + "+" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".csv";		//文件--年月日-时分秒
+			filePath = DirLevelTwo + "\\" + UserName + "+" + TaskAddress + "+" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".csv";		//文件--年月日-时分秒
+			//filePath = DirLevelTwo + "\\" + UserName + "+" + "A" + "+" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".csv";		//文件--年月日-时分秒
 			try
 			{
 				if (!Directory.Exists(DirLevelOne))
@@ -64,8 +64,8 @@ namespace SCBAControlHost
 			sw.Close();
 			// 3. 修改文件名
 			string time = filePath.Split('+')[2].Replace(".csv","");
-			//string newFilePath = DirLevelTwo + "\\" + UserName + "+" + TaskAddress + "+" + time + ".csv";		//文件--年月日-时分秒
-			string newFilePath = DirLevelTwo + "\\" + UserName + "+" + "A" + "+" + time + ".csv";		//文件--年月日-时分秒
+			string newFilePath = DirLevelTwo + "\\" + UserName + "+" + TaskAddress + "+" + time + ".csv";		//文件--年月日-时分秒
+			//string newFilePath = DirLevelTwo + "\\" + UserName + "+" + "A" + "+" + time + ".csv";		//文件--年月日-时分秒
 			if (System.IO.File.Exists(filePath))
 			{
 				System.IO.File.Move(filePath, newFilePath);
@@ -97,8 +97,8 @@ namespace SCBAControlHost
 
 						if (rowStr[1] == "7")		//修改地点记录, 重新修改文件名
 						{
-							//TaskAddress = rowStr[2];
-							//ModifyLogFileName();
+							TaskAddress = rowStr[2];
+						    ModifyLogFileName();
 						}
 						else if (rowStr[1] == "4")	//按钮点击记录
 						{

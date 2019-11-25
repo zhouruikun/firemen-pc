@@ -30,12 +30,12 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle19 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle24 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle20 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle21 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle22 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle23 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.panelHead = new System.Windows.Forms.Panel();
             this.labelChannel = new System.Windows.Forms.Label();
             this.btnUpLoad = new System.Windows.Forms.Button();
@@ -63,6 +63,7 @@
             this.btnCountDownColumn1 = new System.Windows.Forms.Button();
             this.btnDetailsColumn1 = new System.Windows.Forms.Button();
             this.panelTail = new System.Windows.Forms.Panel();
+            this.btnResetEvacuate = new System.Windows.Forms.Button();
             this.btnPlayBackOpen = new System.Windows.Forms.Button();
             this.labelPlayBack = new System.Windows.Forms.Label();
             this.btnPlayBackPlay = new System.Windows.Forms.Button();
@@ -195,7 +196,6 @@
             this.UserSerialNO = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label1 = new System.Windows.Forms.Label();
             this.btnCheckUserReturn = new System.Windows.Forms.Button();
-            this.btnResetEvacuate = new System.Windows.Forms.Button();
             this.panelHead.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxUpload)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPlayBackArrow)).BeginInit();
@@ -600,6 +600,24 @@
             this.panelTail.Size = new System.Drawing.Size(1280, 100);
             this.panelTail.TabIndex = 48;
             // 
+            // btnResetEvacuate
+            // 
+            this.btnResetEvacuate.BackColor = System.Drawing.Color.Transparent;
+            this.btnResetEvacuate.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnResetEvacuate.BackgroundImage")));
+            this.btnResetEvacuate.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnResetEvacuate.FlatAppearance.BorderSize = 0;
+            this.btnResetEvacuate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.btnResetEvacuate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.btnResetEvacuate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnResetEvacuate.Font = new System.Drawing.Font("黑体", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnResetEvacuate.ForeColor = System.Drawing.Color.White;
+            this.btnResetEvacuate.Location = new System.Drawing.Point(456, 17);
+            this.btnResetEvacuate.Name = "btnResetEvacuate";
+            this.btnResetEvacuate.Size = new System.Drawing.Size(150, 50);
+            this.btnResetEvacuate.TabIndex = 97;
+            this.btnResetEvacuate.Text = "F12撤出恢复";
+            this.btnResetEvacuate.UseVisualStyleBackColor = false;
+            // 
             // btnPlayBackOpen
             // 
             this.btnPlayBackOpen.BackColor = System.Drawing.Color.Transparent;
@@ -684,7 +702,7 @@
             this.btnUserUpdate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnUserUpdate.Font = new System.Drawing.Font("黑体", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnUserUpdate.ForeColor = System.Drawing.Color.White;
-            this.btnUserUpdate.Location = new System.Drawing.Point(873, 17);
+            this.btnUserUpdate.Location = new System.Drawing.Point(872, 17);
             this.btnUserUpdate.Name = "btnUserUpdate";
             this.btnUserUpdate.Size = new System.Drawing.Size(150, 50);
             this.btnUserUpdate.TabIndex = 90;
@@ -702,7 +720,7 @@
             this.btnStopAlarm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnStopAlarm.Font = new System.Drawing.Font("黑体", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnStopAlarm.ForeColor = System.Drawing.Color.White;
-            this.btnStopAlarm.Location = new System.Drawing.Point(665, 17);
+            this.btnStopAlarm.Location = new System.Drawing.Point(664, 17);
             this.btnStopAlarm.Name = "btnStopAlarm";
             this.btnStopAlarm.Size = new System.Drawing.Size(150, 50);
             this.btnStopAlarm.TabIndex = 89;
@@ -720,7 +738,7 @@
             this.btnAllUserEvacuate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAllUserEvacuate.Font = new System.Drawing.Font("黑体", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnAllUserEvacuate.ForeColor = System.Drawing.Color.White;
-            this.btnAllUserEvacuate.Location = new System.Drawing.Point(254, 17);
+            this.btnAllUserEvacuate.Location = new System.Drawing.Point(248, 17);
             this.btnAllUserEvacuate.Name = "btnAllUserEvacuate";
             this.btnAllUserEvacuate.Size = new System.Drawing.Size(150, 50);
             this.btnAllUserEvacuate.TabIndex = 88;
@@ -2495,28 +2513,28 @@
             this.dataGridViewCheckUser.AllowUserToResizeRows = false;
             this.dataGridViewCheckUser.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
             this.dataGridViewCheckUser.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            dataGridViewCellStyle19.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle19.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle19.Font = new System.Drawing.Font("微软雅黑", 14F);
-            dataGridViewCellStyle19.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle19.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle19.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle19.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewCheckUser.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle19;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("微软雅黑", 14F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewCheckUser.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridViewCheckUser.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewCheckUser.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.UserName,
             this.UserSex,
             this.UserAge,
             this.UserSerialNO});
-            dataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle24.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle24.Font = new System.Drawing.Font("微软雅黑", 14F);
-            dataGridViewCellStyle24.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle24.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle24.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle24.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridViewCheckUser.DefaultCellStyle = dataGridViewCellStyle24;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("微软雅黑", 14F);
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridViewCheckUser.DefaultCellStyle = dataGridViewCellStyle6;
             this.dataGridViewCheckUser.Location = new System.Drawing.Point(349, 86);
             this.dataGridViewCheckUser.MultiSelect = false;
             this.dataGridViewCheckUser.Name = "dataGridViewCheckUser";
@@ -2528,10 +2546,10 @@
             // UserName
             // 
             this.UserName.DataPropertyName = "UserName";
-            dataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle20.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            dataGridViewCellStyle20.Font = new System.Drawing.Font("微软雅黑", 10F);
-            this.UserName.DefaultCellStyle = dataGridViewCellStyle20;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.UserName.DefaultCellStyle = dataGridViewCellStyle2;
             this.UserName.HeaderText = "姓名";
             this.UserName.Name = "UserName";
             this.UserName.ReadOnly = true;
@@ -2542,10 +2560,10 @@
             // UserSex
             // 
             this.UserSex.DataPropertyName = "UserSex";
-            dataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle21.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            dataGridViewCellStyle21.Font = new System.Drawing.Font("微软雅黑", 10F);
-            this.UserSex.DefaultCellStyle = dataGridViewCellStyle21;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.UserSex.DefaultCellStyle = dataGridViewCellStyle3;
             this.UserSex.HeaderText = "性别";
             this.UserSex.Name = "UserSex";
             this.UserSex.ReadOnly = true;
@@ -2556,10 +2574,10 @@
             // UserAge
             // 
             this.UserAge.DataPropertyName = "UserAge";
-            dataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle22.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            dataGridViewCellStyle22.Font = new System.Drawing.Font("微软雅黑", 10F);
-            this.UserAge.DefaultCellStyle = dataGridViewCellStyle22;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.UserAge.DefaultCellStyle = dataGridViewCellStyle4;
             this.UserAge.HeaderText = "年龄";
             this.UserAge.Name = "UserAge";
             this.UserAge.ReadOnly = true;
@@ -2571,10 +2589,10 @@
             // 
             this.UserSerialNO.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.UserSerialNO.DataPropertyName = "UserSerialNO";
-            dataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle23.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            dataGridViewCellStyle23.Font = new System.Drawing.Font("微软雅黑", 10F);
-            this.UserSerialNO.DefaultCellStyle = dataGridViewCellStyle23;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.UserSerialNO.DefaultCellStyle = dataGridViewCellStyle5;
             this.UserSerialNO.HeaderText = "编号";
             this.UserSerialNO.Name = "UserSerialNO";
             this.UserSerialNO.ReadOnly = true;
@@ -2610,24 +2628,6 @@
             this.btnCheckUserReturn.TabIndex = 55;
             this.btnCheckUserReturn.Text = "返 回";
             this.btnCheckUserReturn.UseVisualStyleBackColor = false;
-            // 
-            // btnResetEvacuate
-            // 
-            this.btnResetEvacuate.BackColor = System.Drawing.Color.Transparent;
-            this.btnResetEvacuate.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("btnResetEvacuate.BackgroundImage")));
-            this.btnResetEvacuate.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnResetEvacuate.FlatAppearance.BorderSize = 0;
-            this.btnResetEvacuate.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
-            this.btnResetEvacuate.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
-            this.btnResetEvacuate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnResetEvacuate.Font = new System.Drawing.Font("黑体", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnResetEvacuate.ForeColor = System.Drawing.Color.White;
-            this.btnResetEvacuate.Location = new System.Drawing.Point(457, 17);
-            this.btnResetEvacuate.Name = "btnResetEvacuate";
-            this.btnResetEvacuate.Size = new System.Drawing.Size(150, 50);
-            this.btnResetEvacuate.TabIndex = 97;
-            this.btnResetEvacuate.Text = "F12撤出恢复";
-            this.btnResetEvacuate.UseVisualStyleBackColor = false;
             // 
             // FormMain
             // 

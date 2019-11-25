@@ -33,8 +33,8 @@ namespace SCBAControlHost
 
 			DirLevelOne = ".\\res\\WorkLogPlay\\" + DateTime.Now.ToString("yyyy-MM");				//一级目录-年-月
 			DirLevelTwo = DirLevelOne + "\\" + DateTime.Now.ToString("MM-dd");					//二级目录-月-日
-			//filePath = DirLevelTwo + "\\" + UserName + "+" + TaskAddress + "+" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "+Play.csv";		//文件--年月日-时分秒
-			filePath = DirLevelTwo + "\\" + UserName + "+" + "A" + "+" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "+Play.csv";		//文件--年月日-时分秒
+			filePath = DirLevelTwo + "\\" + UserName + "+" + TaskAddress + "+" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "+Play.csv";		//文件--年月日-时分秒
+			//filePath = DirLevelTwo + "\\" + UserName + "+" + "A" + "+" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "+Play.csv";		//文件--年月日-时分秒
 			try
 			{
 				if (!Directory.Exists(DirLevelOne))
@@ -64,8 +64,8 @@ namespace SCBAControlHost
 			sw.Close();
 			// 3. 修改文件名
 			string time = filePath.Split('+')[2].Replace(".csv","");
-			//string newFilePath = DirLevelTwo + "\\" + UserName + "+" + TaskAddress + "+" + time + "+Play.csv";		//文件--年月日-时分秒
-			string newFilePath = DirLevelTwo + "\\" + UserName + "+" + "A" + "+" + time + "+Play.csv";		//文件--年月日-时分秒
+			string newFilePath = DirLevelTwo + "\\" + UserName + "+" + TaskAddress + "+" + time + "+Play.csv";		//文件--年月日-时分秒
+			//string newFilePath = DirLevelTwo + "\\" + UserName + "+" + "A" + "+" + time + "+Play.csv";		//文件--年月日-时分秒
 			if (System.IO.File.Exists(filePath))
 			{
 				System.IO.File.Move(filePath, newFilePath);
@@ -99,8 +99,8 @@ namespace SCBAControlHost
 						lock (logQueue) { resStr = logQueue.Dequeue(); }
 						if (resStr.Substring(4, 2) == "07")		//修改地点记录, 重新修改文件名
 						{
-							//TaskAddress = Encoding.UTF8.GetString(AppUtil.strToHexByte(resStr.Substring(10, resStr.Length - 10)));
-							//ModifyPlayLogFileName();
+							TaskAddress = Encoding.UTF8.GetString(AppUtil.strToHexByte(resStr.Substring(10, resStr.Length - 10)));
+							ModifyPlayLogFileName();
 						}
 						else if (resStr.Substring(4, 2) == "10")		//修改用户记录, 重新修改文件名
 						{

@@ -327,12 +327,12 @@ namespace SCBAControlHost
 		{
 			#region 工作日志相关
 			//创建工作日志实例
-			worklog = new WorkLog(SysConfig.Setting.accessAccount, richTextBoxAddress.Text);
+			worklog = new WorkLog(SysConfig.Setting.accessAccount, richTextBoxTask.Text);
 			//写入初始化状态到日志文件中
 			worklog.LogQueue_Enqueue(LogCommand.getInitStatusRecord(users, SysConfig, richTextBoxAddress.Text, richTextBoxTask.Text, serialCom.SerialPortIsOpen, isInternetAvailiable));
 
 			//创建播放日志实例
-			worklogplay = new WorkLogPlay(SysConfig.Setting.accessAccount, richTextBoxAddress.Text);
+			worklogplay = new WorkLogPlay(SysConfig.Setting.accessAccount, richTextBoxTask.Text);
 
 			//服务器周期线程
 			Thread PeriodServerth = new Thread(PeriodRecordServerThread);		//周期上传线程-周期为10s
@@ -722,8 +722,8 @@ namespace SCBAControlHost
 					{
 						if (isInternetAvailiable)	//若服务器在线
 						{
-                            //Thread StartRealUploadth = new Thread(StartRealUpload);		//开启实时上传线程
-                            Thread StartRealUploadth = new Thread(StartRealUploadViaHttp);		//开启实时上传线程
+                           Thread StartRealUploadth = new Thread(StartRealUpload);		//开启实时上传线程
+                          //   Thread StartRealUploadth = new Thread(StartRealUploadViaHttp);		//开启实时上传线程
                             StartRealUploadth.Name = "实时上传线程";
 							StartRealUploadth.IsBackground = true;
 							StartRealUploadth.Start();
@@ -741,8 +741,8 @@ namespace SCBAControlHost
 					pictureBoxUpload.Image = Properties.Resources.UploadImage;
 					btnUpLoad.Text = "实时上传";
                     // 2. 断开网络连接
-                    //netcom.NetClose();
-                    netcom.SetHttpSend(false);//http新增
+                   netcom.NetClose();
+                    // netcom.SetHttpSend(false);//http新增
                     //停止上传记录
                     worklog.LogQueue_Enqueue(LogCommand.getButtonClickRecord(BTNPANEL.MainPanel, (int)BtnOfMainPanel.RTUpload, "3"));
 					//写入网络断开TCP连接记录到日志文件中
@@ -1532,16 +1532,22 @@ namespace SCBAControlHost
 					//上传到服务器
 					if (isRealTimeUploading && netcom.isConnected && isAuthPass && isInternetAvailiable)	//若网络连接正常 且 验证通过 且 服务器在线
 					{
-						netcom.NetSendQueue_Enqueue(NetCommand.NetTaskChangePacket(richTextBoxTask.Text));
+                        netcom.NetSendQueue_Enqueue(NetCommand.NetAddChangePacket(richTextBoxTask.Text));
+                        netcom.NetSendQueue_Enqueue(NetCommand.NetTaskChangePacket(richTextBoxTask.Text));
 					}
-
-					//写入工作日志
-					worklog.LogQueue_Enqueue(LogCommand.getChangeTaskRecord(richTextBoxTask.Text));
+                    //写入工作日志
+                    worklog.LogQueue_Enqueue(LogCommand.getChangeAddRecord(richTextBoxTask.Text));
+                    //写入回放工作日志
+                    worklogplay.LogPlayQueue_Enqueue(LogPlayCommand.getChangeAddRecord(richTextBoxTask.Text));
+                    //写入工作日志
+                    worklog.LogQueue_Enqueue(LogCommand.getChangeTaskRecord(richTextBoxTask.Text));
 					//写入回放工作日志
 					worklogplay.LogPlayQueue_Enqueue(LogPlayCommand.getChangeTaskRecord(richTextBoxTask.Text));
 					richTextBoxTask_text = richTextBoxTask.Text;
+
 				}
-			}
+                //写入修改地点记录到日志文件中   任务=地址
+            }
 		}
 		void richTextBoxTask_TextChanged(object sender, EventArgs e)
 		{
